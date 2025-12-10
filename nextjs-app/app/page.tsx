@@ -1,56 +1,242 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, Zap } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Copy, Mail, RefreshCw } from 'lucide-react';
+import { generateTestId } from '@/lib/utils';
 
 export default function HomePage() {
+  const [testEmail, setTestEmail] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    // Generate test email on mount
+    generateNewEmail();
+  }, []);
+
+  const generateNewEmail = () => {
+    setIsGenerating(true);
+    const testId = generateTestId();
+    const email = `test-${testId}@yourdomain.com`;
+    setTestEmail(email);
+    setTimeout(() => setIsGenerating(false), 300);
+  };
+
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(testEmail);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: 'white' }}>
+    <div style={{ minHeight: '100vh', background: '#F9FAFB' }}>
       <Header />
 
-      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 20px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '24px', lineHeight: '1.2' }}>
-          Test Your Email <span style={{ color: '#0073EA' }}>Deliverability</span>
-        </h1>
-        <p style={{ fontSize: '20px', color: '#6B7280', marginBottom: '40px', maxWidth: '700px', margin: '0 auto 40px' }}>
-          Comprehensive spam and deliverability testing with SpamAssassin
-        </p>
-        <Button size="lg">Start Testing Now</Button>
-      </section>
+      <main style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 20px' }}>
+        {/* Main Test Card */}
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '48px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
+          marginBottom: '32px'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '12px', color: '#111827' }}>
+              Test Your Email Deliverability
+            </h1>
+            <p style={{ fontSize: '18px', color: '#6B7280', lineHeight: '1.6' }}>
+              Send an email to the address below and get instant spam score analysis
+            </p>
+          </div>
 
-      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 20px 120px' }}>
-        <h2 style={{ fontSize: '36px', fontWeight: 'bold', textAlign: 'center', marginBottom: '60px' }}>
-          Everything You Need
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-          <div style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <div style={{ width: '48px', height: '48px', background: '#0073EA', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Shield size={24} color="white" />
+          {/* Email Address Display */}
+          <div style={{ marginBottom: '32px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#374151',
+              marginBottom: '8px'
+            }}>
+              Send your test email to:
+            </label>
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              alignItems: 'stretch'
+            }}>
+              <div style={{
+                flex: 1,
+                background: '#F9FAFB',
+                border: '2px solid #E5E7EB',
+                borderRadius: '8px',
+                padding: '16px 20px',
+                fontSize: '16px',
+                fontFamily: 'monospace',
+                color: '#111827',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <Mail size={20} color="#0073EA" />
+                <span>{testEmail || 'Generating...'}</span>
+              </div>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={copyToClipboard}
+                style={{ minWidth: '120px' }}
+              >
+                {copied ? (
+                  <>Check Copied!</>
+                ) : (
+                  <>
+                    <Copy size={18} />
+                    Copy
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={generateNewEmail}
+                disabled={isGenerating}
+              >
+                <RefreshCw size={18} style={{
+                  animation: isGenerating ? 'spin 1s linear infinite' : 'none'
+                }} />
+              </Button>
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>SpamAssassin Analysis</h3>
-            <p style={{ color: '#6B7280', lineHeight: '1.6' }}>Industry-standard spam detection and scoring</p>
           </div>
-          <div style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <div style={{ width: '48px', height: '48px', background: '#0073EA', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CheckCircle size={24} color="white" />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>Email Authentication</h3>
-            <p style={{ color: '#6B7280', lineHeight: '1.6' }}>SPF, DKIM, and DMARC validation</p>
+
+          {/* Instructions */}
+          <div style={{
+            background: '#EFF6FF',
+            border: '1px solid #BFDBFE',
+            borderRadius: '8px',
+            padding: '20px',
+            marginBottom: '24px'
+          }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1E40AF', marginBottom: '12px' }}>
+              How it works:
+            </h3>
+            <ol style={{
+              margin: 0,
+              paddingLeft: '20px',
+              color: '#1E40AF',
+              lineHeight: '1.8'
+            }}>
+              <li>Copy the email address above</li>
+              <li>Send a test email from your email client</li>
+              <li>Wait a few seconds for analysis</li>
+              <li>View your detailed deliverability report</li>
+            </ol>
           </div>
-          <div style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <div style={{ width: '48px', height: '48px', background: '#0073EA', borderRadius: '8px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={24} color="white" />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>Instant Results</h3>
-            <p style={{ color: '#6B7280', lineHeight: '1.6' }}>Real-time analysis and detailed reports</p>
+
+          {/* Status */}
+          <div style={{ textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
+            Waiting for email... This page will automatically update when we receive your message.
           </div>
         </div>
-      </section>
 
-      <footer style={{ borderTop: '1px solid #E5E7EB', padding: '48px 20px', textAlign: 'center', background: '#F9FAFB' }}>
-        <p style={{ fontSize: '14px', color: '#6B7280' }}>© 2024 Deliverability Analyzer</p>
-      </footer>
+        {/* Feature Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '20px',
+          marginBottom: '32px'
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            border: '1px solid #E5E7EB'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: '#0073EA',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '12px'
+            }}>
+              <span style={{ fontSize: '20px' }}>🛡️</span>
+            </div>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
+              SpamAssassin Score
+            </h3>
+            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
+              Industry-standard spam detection
+            </p>
+          </div>
+
+          <div style={{
+            background: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            border: '1px solid #E5E7EB'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: '#0073EA',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '12px'
+            }}>
+              <span style={{ fontSize: '20px' }}>✅</span>
+            </div>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
+              SPF/DKIM/DMARC
+            </h3>
+            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
+              Email authentication checks
+            </p>
+          </div>
+
+          <div style={{
+            background: 'white',
+            padding: '24px',
+            borderRadius: '12px',
+            border: '1px solid #E5E7EB'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: '#0073EA',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '12px'
+            }}>
+              <span style={{ fontSize: '20px' }}>⚡</span>
+            </div>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
+              Instant Analysis
+            </h3>
+            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
+              Real-time results in seconds
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
