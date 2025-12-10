@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: "Deliverability Analyzer | Email Spam & Deliverability Testing",
   description: "Test your email deliverability and spam score with our comprehensive analysis tool. Check SPF, DKIM, DMARC, blacklist status, and spam score powered by SpamAssassin.",
   icons: {
-    icon: "https://i.ibb.co/gLhN0YXJ/Sendmarc-Icon-Author-Image-removebg-preview.png",
-    apple: "https://i.ibb.co/gLhN0YXJ/Sendmarc-Icon-Author-Image-removebg-preview.png",
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
 };
 
