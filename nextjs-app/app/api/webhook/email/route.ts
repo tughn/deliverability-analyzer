@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         ...(apiKey && { 'x-api-key': apiKey })
       },
       body: JSON.stringify({
-        emailContent: payload.raw || payload.text || payload.html || '',
+        emailContent: `Test email for spam analysis.\n\nFrom: ${payload.from}\nTo: ${payload.to}\nSubject: ${payload.subject}`,
         headers: payload.headers,
         subject: payload.subject,
         from: payload.from,

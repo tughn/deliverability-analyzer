@@ -12,22 +12,18 @@ export default {
 
       console.log(`📧 Processing email from ${from} to ${to}`);
 
-      // Get raw email content
-      const rawEmail = await streamToString(message.raw);
-
-      // Parse headers
+      // Parse headers (keep raw email minimal for speed)
       const headers = {};
       for (const [key, value] of message.headers) {
         headers[key] = value;
       }
 
-      // Prepare payload for webhook
+      // Prepare payload for webhook (omit raw email to reduce size)
       const payload = {
         from: from,
         to: to,
         subject: headers['subject'] || 'No Subject',
         headers: headers,
-        raw: rawEmail,
         timestamp: new Date().toISOString()
       };
 
