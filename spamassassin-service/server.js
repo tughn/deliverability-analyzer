@@ -11,6 +11,9 @@ const execAsync = promisify(exec);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for Render.com
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
@@ -130,11 +133,12 @@ app.post('/api/analyze', authenticateApiKey, async (req, res) => {
 
     fullEmail += '\n' + emailContent;
 
-    // Run SpamAssassin
-    const { stdout, stderr } = await execAsync('spamassassin', {
+    // Run SpamAssassin with optimizations for speed
+    // --local-tests-only skips network tests (DNS, RBL checks) for faster processing
+    const { stdout, stderr } = await execAsync('spamassassin --local-tests-only', {
       input: fullEmail,
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer
-      timeout: 30000 // 30 second timeout
+      timeout: 60000 // 60 second timeout (increased for slow CPU)
     });
 
     // Parse SpamAssassin output
