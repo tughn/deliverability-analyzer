@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         ...(apiKey && { 'x-api-key': apiKey })
       },
       body: JSON.stringify({
-        emailContent: payload.text || payload.html || '',
+        emailContent: payload.raw || payload.text || payload.html || '',
         headers: payload.headers,
         subject: payload.subject,
         from: payload.from,
