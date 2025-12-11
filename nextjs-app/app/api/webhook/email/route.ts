@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!analysisResponse.ok) {
-      throw new Error(`SpamAssassin API error: ${analysisResponse.statusText}`);
+      const errorText = await analysisResponse.text();
+      console.error(`SpamAssassin API error (${analysisResponse.status}):`, errorText);
+      throw new Error(`SpamAssassin API error: ${analysisResponse.statusText} - ${errorText}`);
     }
 
     const analysisResult = await analysisResponse.json();

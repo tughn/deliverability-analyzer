@@ -53,12 +53,11 @@ export default {
 
       // Drop the email (don't forward it anywhere)
       // This prevents it from being forwarded to your personal email
-      message.setReject("Email processed by deliverability analyzer");
+      // Using setReject with a 250 code would be better, but we'll just drop it
 
     } catch (error) {
       console.error('❌ Email worker error:', error);
-      // Still reject the email to prevent forwarding
-      message.setReject("Error processing email");
+      // Drop the email even on error
     }
   }
 };
