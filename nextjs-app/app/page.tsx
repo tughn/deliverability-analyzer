@@ -20,7 +20,7 @@ export default function HomePage() {
   const generateNewEmail = () => {
     setIsGenerating(true);
     const testId = generateTestId();
-    const email = `test-${testId}@yourdomain.com`;
+    const email = `test-${testId}@deliverabilityanalyzer.xyz`;
     setTestEmail(email);
     setTimeout(() => setIsGenerating(false), 300);
   };
