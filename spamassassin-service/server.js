@@ -134,8 +134,8 @@ app.post('/api/analyze', authenticateApiKey, async (req, res) => {
     fullEmail += '\n' + emailContent;
 
     // Run SpamAssassin with optimizations for speed
-    // --local-tests-only skips network tests (DNS, RBL checks) for faster processing
-    const { stdout, stderr } = await execAsync('spamassassin --local-tests-only', {
+    // -L skips network tests (DNS, RBL checks) for faster processing
+    const { stdout, stderr } = await execAsync('spamassassin -L', {
       input: fullEmail,
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       timeout: 60000 // 60 second timeout (increased for slow CPU)
