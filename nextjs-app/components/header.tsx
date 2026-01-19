@@ -35,8 +35,10 @@ export function Header() {
         </Link>
 
         <nav style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link
-            href="/"
+          <a
+            href="https://sendmarc.com"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               fontSize: '14px',
               fontWeight: '500',
@@ -48,21 +50,7 @@ export function Header() {
             onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}
           >
             Home
-          </Link>
-          <Link
-            href="/test"
-            style={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#374151',
-              textDecoration: 'none',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#0073EA'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}
-          >
-            Test Email
-          </Link>
+          </a>
         </nav>
       </div>
     </header>
