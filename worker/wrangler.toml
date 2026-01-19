@@ -1,0 +1,13 @@
+name = "deliverability-analyzer-worker"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# KV namespace for storing email analysis results
+[[kv_namespaces]]
+binding = "EMAIL_RESULTS"
+id = "3b9a65d8c09b423cb583740d04c9ce8d"
+preview_id = "93bc99bfbf6c4d50b8187d8a58207167"
+
+# Environment variables (optional)
+[vars]
+# WEBHOOK_URL = "https://deliverability-analyzer.vercel.app/api/webhook/email"

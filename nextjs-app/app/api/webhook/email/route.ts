@@ -3,80 +3,42 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-interface EmailWebhookPayload {
+interface EmailAnalysisPayload {
+  testId: string;
   from: string;
   to: string;
   subject: string;
-  headers: Record<string, string>;
-  text: string;
-  html: string;
-  raw: string;
+  analysis: {
+    spfPass: boolean;
+    dkimPass: boolean;
+    dmarcPass: boolean;
+    spamScore: number;
+    spamIndicators: string[];
+    recommendations: string[];
+    headers: Record<string, string>;
+  };
+  timestamp: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const payload: EmailWebhookPayload = await request.json();
+    const payload: EmailAnalysisPayload = await request.json();
 
-    console.log('📧 Received email webhook:', {
+    console.log('📧 Received email analysis:', {
+      testId: payload.testId,
       from: payload.from,
       to: payload.to,
-      subject: payload.subject
+      spamScore: payload.analysis.spamScore
     });
 
-    // Extract test ID from the email address
-    const emailMatch = payload.to.match(/test-([a-zA-Z0-9]+)@/);
-    const testId = emailMatch ? emailMatch[1] : null;
-
-    if (!testId) {
-      return NextResponse.json(
-        { error: 'Invalid email format - missing test ID' },
-        { status: 400 }
-      );
-    }
-
-    // Analyze the email with SpamAssassin
-    const spamAssassinUrl = process.env.SPAMASSASSIN_API_URL || 'https://deliverability-analyzer.onrender.com';
-    const apiKey = process.env.SPAMASSASSIN_API_KEY || '';
-
-    const analysisResponse = await fetch(`${spamAssassinUrl}/api/analyze`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(apiKey && { 'x-api-key': apiKey })
-      },
-      body: JSON.stringify({
-        emailContent: `Test email for spam analysis.\n\nFrom: ${payload.from}\nTo: ${payload.to}\nSubject: ${payload.subject}`,
-        headers: payload.headers,
-        subject: payload.subject,
-        from: payload.from,
-        to: payload.to
-      })
-    });
-
-    if (!analysisResponse.ok) {
-      const errorText = await analysisResponse.text();
-      console.error(`SpamAssassin API error (${analysisResponse.status}):`, errorText);
-      throw new Error(`SpamAssassin API error: ${analysisResponse.statusText} - ${errorText}`);
-    }
-
-    const analysisResult = await analysisResponse.json();
-
-    // Store the result in a database or cache
-    // For now, we'll just log it
-    console.log('✅ SpamAssassin analysis complete:', {
-      testId,
-      score: analysisResult.result.score,
-      isSpam: analysisResult.result.isSpam
-    });
-
-    // TODO: Store result in database/cache with testId as key
-    // await storeAnalysisResult(testId, analysisResult);
+    // In a production app, you would store this in a database or KV store
+    // For now, we just log it and return success
+    // The Cloudflare Worker stores it in KV, so we don't need to duplicate storage here
 
     return NextResponse.json({
       success: true,
-      testId,
-      message: 'Email analyzed successfully',
-      result: analysisResult.result
+      testId: payload.testId,
+      message: 'Analysis received successfully'
     });
 
   } catch (error) {
@@ -98,7 +60,7 @@ export async function GET() {
     service: 'Email Analysis Webhook',
     status: 'active',
     endpoints: {
-      POST: '/api/webhook/email - Receives email data from Cloudflare Email Worker'
+      POST: '/api/webhook/email - Receives analysis results from Cloudflare Email Worker'
     }
   });
 }

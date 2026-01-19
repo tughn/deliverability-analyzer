@@ -1,0 +1,17 @@
+{
+  "name": "deliverability-analyzer-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Email Worker for deliverability analysis",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "keywords": ["cloudflare", "workers", "email"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.80.0"
+  }
+}
