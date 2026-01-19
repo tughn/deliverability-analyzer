@@ -2,39 +2,39 @@
 
 A lightweight, serverless email deliverability testing tool that helps you verify email authentication and identify potential spam triggers. Built with Next.js and Cloudflare Workers for instant, reliable results.
 
-**[🚀 Live Demo](https://deliverability-analyzer.vercel.app/)**
+**[Live Demo](https://deliverability-analyzer.vercel.app/)**
 
 ![Deliverability Score](https://img.shields.io/badge/Deliverability-10%2F10-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange)
 
-## ✨ Features
+## Features
 
-- **📧 Email Authentication Verification**
+- **Email Authentication Verification**
   - SPF (Sender Policy Framework) validation
   - DKIM (DomainKeys Identified Mail) signature verification
   - DMARC (Domain-based Message Authentication) policy checks
   - Support for ARC (Authenticated Received Chain) headers
 
-- **🔍 Content Analysis**
+- **Content Analysis**
   - Spam trigger detection
   - URL shortener identification
   - Subject line analysis
   - Header completeness checks
 
-- **📊 Actionable Insights**
+- **Actionable Insights**
   - Clear deliverability score (0-10 scale, higher is better)
   - Specific recommendations for improvement
   - Real-time results with automatic polling
   - User-friendly explanations of technical issues
 
-- **⚡ Modern Stack**
+- **Modern Stack**
   - 100% serverless architecture (no backend costs)
   - Instant results in 5-10 seconds
   - Fully mobile-responsive design
   - Professional UI with smooth animations
 
-## 🎯 How It Works
+## How It Works
 
 1. **Generate Test Email**: The app creates a unique test email address (`test-abc123@deliverabilityanalyzer.xyz`)
 2. **Send Your Email**: Send an email from your server/ESP to the generated address
@@ -43,7 +43,7 @@ A lightweight, serverless email deliverability testing tool that helps you verif
 5. **Store Results**: Analysis is stored in Cloudflare KV with a 24-hour TTL
 6. **Display**: Results appear automatically on the frontend via polling
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────┐
@@ -71,7 +71,7 @@ A lightweight, serverless email deliverability testing tool that helps you verif
 └─────────────────┘
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -152,7 +152,7 @@ vercel deploy --prod
 
 Or connect your GitHub repository to Vercel for automatic deployments.
 
-## ⚙️ Configuration
+## Configuration
 
 ### Customize Email Domain
 
@@ -181,7 +181,7 @@ Customize the catch-all pattern in Cloudflare Email Routing:
 - `analyzer-*@domain.com` - Custom prefix
 - `*@subdomain.domain.com` - Subdomain routing
 
-## 🛠️ Development
+## Development
 
 ### Local Worker Development
 
@@ -208,7 +208,7 @@ cd worker
 npx wrangler tail
 ```
 
-## 📦 Tech Stack
+## Tech Stack
 
 - **Frontend**: Next.js 16, React, TypeScript
 - **Backend**: Cloudflare Workers (JavaScript)
@@ -218,7 +218,7 @@ npx wrangler tail
 - **Icons**: Lucide React
 - **Styling**: Modern CSS with responsive design
 
-## 📡 API Reference
+## API Reference
 
 ### Worker Endpoints
 
@@ -266,7 +266,7 @@ curl https://your-worker.workers.dev/results/mkl5rz...
 }
 ```
 
-## 📊 Scoring System
+## Scoring System
 
 The deliverability score is calculated on a 0-10 scale (higher is better):
 
@@ -284,7 +284,7 @@ Deductions are made for:
 - Missing headers: -0.5 points each
 - Spam triggers: Variable deductions
 
-## ⚠️ Limitations
+## Limitations
 
 - **DKIM Validation**: Cannot cryptographically validate DKIM signatures in the worker (relies on receiving server validation from authentication headers)
 - **Blacklist Checks**: Not included (would require external API calls)
@@ -292,7 +292,7 @@ Deductions are made for:
 - **Storage**: Results expire after 24 hours
 - **Rate Limiting**: Not implemented (consider adding for production use)
 
-## 💡 Use Cases
+## Use Cases
 
 - **Email Developers**: Test email authentication before sending campaigns
 - **System Administrators**: Verify SPF/DKIM/DMARC configuration
@@ -300,7 +300,7 @@ Deductions are made for:
 - **Security Teams**: Validate email authentication policies
 - **DevOps**: Automated testing in CI/CD pipelines
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! To contribute:
 
@@ -310,16 +310,16 @@ Contributions are welcome! To contribute:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙋 Support
+## Support
 
 - **Issues**: [GitHub Issues](https://github.com/tughn/deliverability-analyzer/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/tughn/deliverability-analyzer/discussions)
 
-## 🌟 Acknowledgments
+## Acknowledgments
 
 - Built with [Cloudflare Workers](https://workers.cloudflare.com/)
 - Powered by [Next.js](https://nextjs.org/)
@@ -330,4 +330,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **[Try it now →](https://deliverability-analyzer.vercel.app/)**
 
-Built with ❤️ for better email deliverability
+Built for better email deliverability
