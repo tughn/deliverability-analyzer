@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-interface RouteParams {
-  params: Promise<{
-    testId: string;
-  }>;
-}
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ testId: string }> }
+) {
   try {
-    const { testId } = await params;
+    const { testId } = await context.params;
 
     if (!testId) {
       return NextResponse.json(
