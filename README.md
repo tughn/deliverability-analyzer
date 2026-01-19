@@ -1,314 +1,333 @@
-# Deliverability Analyzer
+# Email Deliverability Analyzer
 
-A lightweight email deliverability testing tool. Test your email's spam score, validate SPF/DKIM/DMARC records, and get instant analysis reports - all for free.
+A lightweight, serverless email deliverability testing tool that helps you verify email authentication and identify potential spam triggers. Built with Next.js and Cloudflare Workers for instant, reliable results.
 
-**Domain**: deliverabilityanalyzer.xyz (Namecheap)
+**[🚀 Live Demo](https://deliverability-analyzer.vercel.app/)**
 
-## Features
+![Deliverability Score](https://img.shields.io/badge/Deliverability-10%2F10-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange)
 
-- ✅ **SPF/DKIM/DMARC Validation** - Email authentication checks
-- 📊 **Spam Score Analysis** - Content-based spam detection
-- 🔍 **Header Analysis** - Email header inspection
-- ⚡ **Instant Results** - Real-time analysis
-- 🆓 **100% Free** - Cloudflare Workers + Vercel free tiers
-- 🌐 **No Backend Required** - Serverless architecture
+## ✨ Features
 
-## Architecture
+- **📧 Email Authentication Verification**
+  - SPF (Sender Policy Framework) validation
+  - DKIM (DomainKeys Identified Mail) signature verification
+  - DMARC (Domain-based Message Authentication) policy checks
+  - Support for ARC (Authenticated Received Chain) headers
 
-### Simple & Lightweight
-- **Frontend**: Next.js on Vercel (Free tier)
-- **Email Worker**: Cloudflare Workers (Free tier - 100k requests/day)
-- **Storage**: Cloudflare KV (Free tier - 100k reads/day, 24-hour TTL)
-- **Domain**: deliverabilityanalyzer.xyz (Namecheap)
+- **🔍 Content Analysis**
+  - Spam trigger detection
+  - URL shortener identification
+  - Subject line analysis
+  - Header completeness checks
 
-### How It Works
-1. User visits website, gets unique test email address: `test-abc123@deliverabilityanalyzer.xyz`
-2. User sends email from their system to the test address
-3. Cloudflare Email Routing catches the email
-4. Cloudflare Worker analyzes email (SPF, DKIM, DMARC, content, headers)
-5. Results stored in KV with 24-hour expiration
-6. User views results on website
+- **📊 Actionable Insights**
+  - Clear deliverability score (0-10 scale, higher is better)
+  - Specific recommendations for improvement
+  - Real-time results with automatic polling
+  - User-friendly explanations of technical issues
 
-## Getting Started
+- **⚡ Modern Stack**
+  - 100% serverless architecture (no backend costs)
+  - Instant results in 5-10 seconds
+  - Fully mobile-responsive design
+  - Professional UI with smooth animations
+
+## 🎯 How It Works
+
+1. **Generate Test Email**: The app creates a unique test email address (`test-abc123@deliverabilityanalyzer.xyz`)
+2. **Send Your Email**: Send an email from your server/ESP to the generated address
+3. **Cloudflare Receives**: Email is routed through Cloudflare Email Routing to a Worker
+4. **Analysis**: Worker validates SPF/DKIM/DMARC via DNS lookups and authentication headers
+5. **Store Results**: Analysis is stored in Cloudflare KV with a 24-hour TTL
+6. **Display**: Results appear automatically on the frontend via polling
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐
+│   Your Email    │
+│     Server      │
+└────────┬────────┘
+         │ Send email
+         ▼
+┌─────────────────┐
+│   Cloudflare    │
+│ Email Routing   │ ← Validates SPF/DKIM/DMARC
+└────────┬────────┘
+         │ Forward to Worker
+         ▼
+┌─────────────────┐
+│  Worker (Edge)  │ ← Performs DNS lookups
+│                 │   Analyzes content
+│                 │   Stores in KV
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Next.js App   │ ← Polls for results
+│   (Vercel)      │   Displays analysis
+└─────────────────┘
+```
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or pnpm
-- Cloudflare account (free)
-- Namecheap domain (deliverabilityanalyzer.xyz)
+- Cloudflare account with Email Routing enabled
+- Vercel account (or any Next.js hosting platform)
+- Custom domain configured in Cloudflare
 
-### Local Development
-
-#### 1. Install Dependencies
+### 1. Clone the Repository
 
 ```bash
-# Install frontend dependencies
-cd nextjs-app
-npm install
-
-# Install worker dependencies
-cd ../worker
-npm install
+git clone https://github.com/tughn/deliverability-analyzer.git
+cd deliverability-analyzer
 ```
 
-#### 2. Set Up Cloudflare KV (One-time setup)
+### 2. Set Up Cloudflare Worker
 
 ```bash
 cd worker
+npm install
+```
 
-# Login to Cloudflare
+Create a KV namespace for storing results:
+
+```bash
 npx wrangler login
-
-# Create KV namespace for production
 npx wrangler kv:namespace create EMAIL_RESULTS
-
-# Create KV namespace for development
-npx wrangler kv:namespace create EMAIL_RESULTS --preview
 ```
 
-This will output namespace IDs. Update `worker/wrangler.toml`:
+Update `wrangler.toml` with your KV namespace ID:
 
 ```toml
-kv_namespaces = [
-  { binding = "EMAIL_RESULTS", id = "YOUR_PRODUCTION_ID", preview_id = "YOUR_PREVIEW_ID" }
-]
+[[kv_namespaces]]
+binding = "EMAIL_RESULTS"
+id = "your-namespace-id-here"
 ```
 
-#### 3. Run Locally
-
-**Terminal 1 - Frontend:**
-```bash
-cd nextjs-app
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000)
-
-**Terminal 2 - Worker:**
-```bash
-cd worker
-npm run dev
-```
-
-Worker runs on [http://localhost:8787](http://localhost:8787)
-
-#### 4. Test the Worker API
+Deploy the worker:
 
 ```bash
-# Test health check
-curl http://localhost:8787/health
-
-# Test results endpoint (will return 404 until you receive an email)
-curl http://localhost:8787/api/results/test123
+npx wrangler deploy
 ```
 
-### Testing Email Flow Locally
+### 3. Configure Cloudflare Email Routing
 
-Since email routing requires a real domain, local email testing is limited. You can:
+In your Cloudflare dashboard:
 
-1. **Test the API directly** by posting mock data to the worker
-2. **Deploy to Cloudflare** (free) and test with real emails
-3. **Use Cloudflare Email Routing dashboard** to test email rules
-
-## Deployment
-
-### Step 1: Deploy Cloudflare Worker
-
-```bash
-cd worker
-
-# Deploy to Cloudflare
-npm run deploy
-```
-
-This will output your worker URL: `https://deliverability-analyzer-worker.YOUR_SUBDOMAIN.workers.dev`
-
-### Step 2: Configure Cloudflare Email Routing
-
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Select your domain: `deliverabilityanalyzer.xyz`
-3. Navigate to **Email Routing** → **Routing Rules**
-4. Click **Create Rule**
-5. Configure:
-   - **Match type**: Catch-all address
+1. Navigate to **Email** → **Email Routing**
+2. Add a catch-all routing rule:
+   - **Match**: `test-*@yourdomain.com`
    - **Action**: Send to Worker
-   - **Worker**: Select `deliverability-analyzer-worker`
-6. Save rule
+   - **Destination**: Select your deployed worker
 
-### Step 3: Deploy Next.js to Vercel
+### 4. Set Up Next.js Frontend
+
+```bash
+cd ../nextjs-app
+npm install
+```
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_WORKER_URL=https://your-worker.workers.dev
+```
+
+Update the email domain in `app/page.tsx` (line 76):
+
+```typescript
+const newEmail = `test-${newTestId}@yourdomain.com`;
+```
+
+### 5. Deploy to Vercel
+
+```bash
+npm i -g vercel
+vercel deploy --prod
+```
+
+Or connect your GitHub repository to Vercel for automatic deployments.
+
+## ⚙️ Configuration
+
+### Customize Email Domain
+
+Update the domain in `nextjs-app/app/page.tsx`:
+
+```typescript
+const newEmail = `test-${newTestId}@yourdomain.com`;
+```
+
+### Adjust KV Storage TTL
+
+Modify result expiration time in `worker/index.js`:
+
+```javascript
+await env.EMAIL_RESULTS.put(
+  `test:${testId}`,
+  JSON.stringify(result),
+  { expirationTtl: 86400 } // 24 hours (default)
+);
+```
+
+### Email Routing Patterns
+
+Customize the catch-all pattern in Cloudflare Email Routing:
+- `test-*@domain.com` - Only route test emails (recommended)
+- `analyzer-*@domain.com` - Custom prefix
+- `*@subdomain.domain.com` - Subdomain routing
+
+## 🛠️ Development
+
+### Local Worker Development
+
+```bash
+cd worker
+npx wrangler dev
+```
+
+Worker runs on `http://localhost:8787`
+
+### Local Next.js Development
 
 ```bash
 cd nextjs-app
-
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
+npm run dev
 ```
 
-Or deploy via [Vercel Dashboard](https://vercel.com):
-1. Import GitHub repository
-2. Set root directory: `nextjs-app`
-3. Add environment variable:
-   ```
-   NEXT_PUBLIC_WORKER_URL=https://deliverability-analyzer-worker.YOUR_SUBDOMAIN.workers.dev
-   ```
-4. Deploy
+Visit `http://localhost:3000` to test locally.
 
-### Step 4: Configure Domain DNS (Namecheap)
-
-1. Go to Namecheap DNS settings for `deliverabilityanalyzer.xyz`
-2. Add Cloudflare nameservers (from Cloudflare dashboard)
-3. Wait for DNS propagation (up to 24 hours)
-
-### Step 5: Update Worker with Webhook URL (Optional)
-
-Edit `worker/wrangler.toml`:
-
-```toml
-[vars]
-WEBHOOK_URL = "https://your-vercel-app.vercel.app/api/webhook/email"
-```
-
-Redeploy:
-```bash
-npm run deploy
-```
-
-## Project Structure
-
-```
-deliverability-analyzer/
-├── nextjs-app/              # Next.js frontend
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── results/[testId]/  # Fetch results from worker
-│   │   │   └── webhook/email/     # Receive notifications (optional)
-│   │   ├── page.tsx               # Landing page
-│   │   └── layout.tsx
-│   ├── components/                # React components
-│   └── package.json
-├── worker/                  # Cloudflare Email Worker
-│   ├── index.js            # Worker code with email analysis
-│   ├── wrangler.toml       # Worker configuration
-│   └── package.json
-└── README.md
-```
-
-## Email Analysis Features
-
-The worker performs these lightweight checks:
-
-### 1. Authentication Checks
-- ✅ **SPF**: Sender Policy Framework validation
-- ✅ **DKIM**: DomainKeys Identified Mail signature verification
-- ✅ **DMARC**: Domain-based Message Authentication alignment
-
-### 2. Content Analysis
-- Spam trigger words detection
-- Excessive capitalization check
-- Excessive punctuation (!!!) detection
-- URL shortener detection
-- Link count analysis
-- Content length validation
-
-### 3. Header Analysis
-- Return-Path header validation
-- Message-ID presence check
-- Date header validation
-- From/Return-Path domain alignment
-
-### 4. Spam Scoring
-
-Each check contributes to an overall spam score:
-- **0 points**: Excellent - Very likely to reach inbox
-- **1-2 points**: Good - Likely to reach inbox
-- **3-5 points**: Fair - May reach spam folder
-- **6+ points**: Poor - Likely to be marked as spam
-
-## Environment Variables
-
-### Next.js App (.env.local)
+### View Worker Logs
 
 ```bash
-# Cloudflare Worker URL (after deployment)
-NEXT_PUBLIC_WORKER_URL=https://deliverability-analyzer-worker.YOUR_SUBDOMAIN.workers.dev
-```
-
-### Cloudflare Worker (wrangler.toml)
-
-```toml
-[vars]
-# Optional: Webhook URL for notifications
-WEBHOOK_URL = "https://your-vercel-app.vercel.app/api/webhook/email"
-```
-
-## Troubleshooting
-
-### Issue: Emails not being received
-
-**Check:**
-1. Cloudflare Email Routing is enabled for your domain
-2. Catch-all rule is configured to send to your worker
-3. DNS records are properly configured (MX records)
-4. Worker is deployed and running
-
-**Test:**
-```bash
-# Check worker health
-curl https://your-worker.workers.dev/health
-
-# View worker logs
 cd worker
-npm run tail
+npx wrangler tail
 ```
 
-### Issue: Results not found
+## 📦 Tech Stack
 
-**Check:**
-1. Test ID is correct (check email address format: `test-abc123@domain.xyz`)
-2. Email was actually sent and received by Cloudflare
-3. KV namespace is properly configured in wrangler.toml
-4. Results expire after 24 hours
+- **Frontend**: Next.js 16, React, TypeScript
+- **Backend**: Cloudflare Workers (JavaScript)
+- **Storage**: Cloudflare KV
+- **Email**: Cloudflare Email Routing
+- **Hosting**: Vercel (frontend), Cloudflare Workers (backend)
+- **Icons**: Lucide React
+- **Styling**: Modern CSS with responsive design
 
-### Issue: Worker deployment fails
+## 📡 API Reference
 
-**Check:**
-1. You're logged in: `npx wrangler login`
-2. KV namespace IDs are correct in wrangler.toml
-3. You have Cloudflare Workers enabled on your account
+### Worker Endpoints
 
-## Cost Breakdown (Free Tier)
+#### `POST /email`
+Receives incoming emails from Cloudflare Email Routing.
 
-- **Cloudflare Workers**: 100,000 requests/day (FREE)
-- **Cloudflare KV**: 100,000 reads/day, 1,000 writes/day (FREE)
-- **Vercel**: Hobby plan with unlimited websites (FREE)
-- **Domain**: deliverabilityanalyzer.xyz (~$10-15/year on Namecheap)
+**Trigger**: Automatic (via Cloudflare Email Routing)
 
-**Total monthly cost: $0** (excluding domain registration)
+**Response**: 200 OK
 
-## Limitations
+---
 
-- Results stored for 24 hours only (KV TTL)
-- Free tier limits: 100k requests/day (Cloudflare)
-- No persistent database (results are temporary)
-- Basic spam analysis (not as comprehensive as SpamAssassin)
+#### `GET /results/:testId`
+Retrieves analysis results for a specific test ID.
 
-## Roadmap
+**Example Request**:
+```bash
+curl https://your-worker.workers.dev/results/mkl5rz...
+```
 
-- [ ] Add blacklist (DNSBL) checking
-- [ ] Implement real-time WebSocket updates
-- [ ] Add email preview/rendering
-- [ ] Historical test results (with persistent storage)
-- [ ] Export results as PDF/CSV
-- [ ] Custom domain support
+**Example Response**:
+```json
+{
+  "testId": "mkl5rz...",
+  "from": "sender@example.com",
+  "to": "test-mkl5rz...@yourdomain.com",
+  "subject": "Test email",
+  "analysis": {
+    "spfPass": true,
+    "dkimPass": true,
+    "dmarcPass": true,
+    "spamScore": 8.5,
+    "spamIndicators": ["Contains URL shortener"],
+    "recommendations": [
+      "Replace shortened URLs with full links - email filters often flag bit.ly and similar services as suspicious"
+    ],
+    "details": {
+      "spf": "SPF passed (validated by receiving server)",
+      "dkim": "DKIM passed (validated by receiving server)",
+      "dmarc": "DMARC passed (validated by receiving server)"
+    },
+    "assessment": "Good - Likely to reach inbox"
+  },
+  "timestamp": "2026-01-19T12:47:25.924Z"
+}
+```
 
-## License
+## 📊 Scoring System
 
-MIT
+The deliverability score is calculated on a 0-10 scale (higher is better):
 
-## Support
+- **10/10**: Perfect - All checks passed
+- **9/10**: Excellent - Very likely to reach inbox
+- **7-8/10**: Good - Likely to reach inbox
+- **5-6/10**: Fair - May reach spam folder
+- **0-4/10**: Poor - Likely to be marked as spam
 
-For issues or questions, please create an issue on GitHub or contact support.
+Deductions are made for:
+- SPF failure: -2 points
+- DKIM failure: -2 points
+- DMARC failure: -1 point
+- URL shorteners: -1 point
+- Missing headers: -0.5 points each
+- Spam triggers: Variable deductions
+
+## ⚠️ Limitations
+
+- **DKIM Validation**: Cannot cryptographically validate DKIM signatures in the worker (relies on receiving server validation from authentication headers)
+- **Blacklist Checks**: Not included (would require external API calls)
+- **Email Preview**: Raw email content is not displayed to users
+- **Storage**: Results expire after 24 hours
+- **Rate Limiting**: Not implemented (consider adding for production use)
+
+## 💡 Use Cases
+
+- **Email Developers**: Test email authentication before sending campaigns
+- **System Administrators**: Verify SPF/DKIM/DMARC configuration
+- **Marketing Teams**: Check email deliverability before mass sends
+- **Security Teams**: Validate email authentication policies
+- **DevOps**: Automated testing in CI/CD pipelines
+
+## 🤝 Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙋 Support
+
+- **Issues**: [GitHub Issues](https://github.com/tughn/deliverability-analyzer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/tughn/deliverability-analyzer/discussions)
+
+## 🌟 Acknowledgments
+
+- Built with [Cloudflare Workers](https://workers.cloudflare.com/)
+- Powered by [Next.js](https://nextjs.org/)
+- Icons by [Lucide](https://lucide.dev/)
+- Deployed on [Vercel](https://vercel.com/)
+
+---
+
+**[Try it now →](https://deliverability-analyzer.vercel.app/)**
+
+Built with ❤️ for better email deliverability

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deliverability Analyzer | Email Spam & Deliverability Testing",
-  description: "Test your email deliverability and spam score with our comprehensive analysis tool. Check SPF, DKIM, DMARC, blacklist status, and spam score powered by SpamAssassin.",
+  title: "Deliverability Analyzer | Email Authentication Testing",
+  description: "Test your email deliverability instantly. Verify SPF, DKIM, and DMARC authentication, analyze content for spam triggers, and get actionable recommendations to improve your email reputation.",
 };
 
 export default function RootLayout({
