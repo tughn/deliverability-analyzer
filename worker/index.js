@@ -174,15 +174,16 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
   analysis.recommendations.push(...headerChecks.recommendations);
   analysis.headers = headerChecks.important;
 
-  // Cap score at 10
-  analysis.spamScore = Math.min(10, analysis.spamScore);
+  // Cap risk score at 10 and invert to deliverability score (higher = better)
+  const riskScore = Math.min(10, analysis.spamScore);
+  analysis.spamScore = 10 - riskScore; // Invert: 10 = perfect, 0 = terrible
 
-  // Overall assessment
-  if (analysis.spamScore === 0) {
+  // Overall assessment (now higher score = better)
+  if (analysis.spamScore >= 9) {
     analysis.assessment = 'Excellent - Very likely to reach inbox';
-  } else if (analysis.spamScore <= 2) {
+  } else if (analysis.spamScore >= 7) {
     analysis.assessment = 'Good - Likely to reach inbox';
-  } else if (analysis.spamScore <= 5) {
+  } else if (analysis.spamScore >= 5) {
     analysis.assessment = 'Fair - May reach spam folder';
   } else {
     analysis.assessment = 'Poor - Likely to be marked as spam';
@@ -196,12 +197,15 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
  */
 async function checkSPF(domain, sendingIP, headers) {
   try {
-    // First check authentication-results header (most reliable)
+    // Check authentication-results header (most reliable)
     const authResults = headers['authentication-results'] || '';
-    if (authResults.includes('spf=pass')) {
+    // Also check ARC (Authenticated Received Chain) for forwarded/relayed emails
+    const arcAuthResults = headers['arc-authentication-results'] || '';
+
+    if (authResults.includes('spf=pass') || arcAuthResults.includes('spf=pass')) {
       return { pass: true, details: 'SPF passed (validated by receiving server)' };
     }
-    if (authResults.includes('spf=fail')) {
+    if (authResults.includes('spf=fail') || arcAuthResults.includes('spf=fail')) {
       return { pass: false, details: 'SPF failed (rejected by receiving server)' };
     }
 
@@ -250,10 +254,11 @@ async function checkSPF(domain, sendingIP, headers) {
  */
 function checkDKIM(headers) {
   const authResults = headers['authentication-results'] || '';
+  const arcAuthResults = headers['arc-authentication-results'] || '';
   const dkimSignature = headers['dkim-signature'] || '';
 
-  // Check if receiving server validated it
-  if (authResults.includes('dkim=pass')) {
+  // Check if receiving server validated it (check both headers)
+  if (authResults.includes('dkim=pass') || arcAuthResults.includes('dkim=pass')) {
     return {
       pass: true,
       details: 'DKIM passed (validated by receiving server)'
@@ -279,12 +284,14 @@ function checkDKIM(headers) {
  */
 async function checkDMARC(domain, headers) {
   try {
-    // First check authentication-results header
+    // Check authentication-results header
     const authResults = headers['authentication-results'] || '';
-    if (authResults.includes('dmarc=pass')) {
+    const arcAuthResults = headers['arc-authentication-results'] || '';
+
+    if (authResults.includes('dmarc=pass') || arcAuthResults.includes('dmarc=pass')) {
       return { pass: true, details: 'DMARC passed (validated by receiving server)' };
     }
-    if (authResults.includes('dmarc=fail')) {
+    if (authResults.includes('dmarc=fail') || arcAuthResults.includes('dmarc=fail')) {
       return { pass: false, details: 'DMARC failed (rejected by receiving server)' };
     }
 

@@ -274,18 +274,18 @@ export default function HomePage() {
                 </div>
               </div>
               <div style={{
-                background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FEF3C7' : '#FEF2F2',
-                border: `3px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
+                background: results.analysis.spamScore >= 7 ? '#ECFDF5' : results.analysis.spamScore >= 5 ? '#FEF3C7' : '#FEF2F2',
+                border: `3px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
                 borderRadius: '12px',
                 padding: '16px 24px',
                 textAlign: 'center',
                 minWidth: '120px'
               }}>
-                <div style={{ fontSize: '36px', fontWeight: 'bold', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626', lineHeight: '1' }}>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', color: results.analysis.spamScore >= 7 ? '#059669' : results.analysis.spamScore >= 5 ? '#D97706' : '#DC2626', lineHeight: '1' }}>
                   {results.analysis.spamScore}<span style={{ fontSize: '20px' }}>/10</span>
                 </div>
                 <div style={{ fontSize: '12px', fontWeight: '600', color: '#6B7280', marginTop: '4px' }}>
-                  Spam Risk
+                  Deliverability
                 </div>
               </div>
             </div>
@@ -373,7 +373,7 @@ export default function HomePage() {
               {/* Right Column - Recommendations */}
               <div>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
-                  {results.analysis.spamScore < 3 ? 'Looking Good!' : 'How to Improve'}
+                  {results.analysis.spamScore >= 7 ? 'Looking Good!' : 'How to Improve'}
                 </h3>
                 {results.analysis.recommendations.length > 0 ? (
                   <div style={{
@@ -414,13 +414,13 @@ export default function HomePage() {
             <div style={{
               marginTop: '20px',
               padding: '16px',
-              background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FFFBEB' : '#FEF2F2',
-              border: `1px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
+              background: results.analysis.spamScore >= 7 ? '#ECFDF5' : results.analysis.spamScore >= 5 ? '#FFFBEB' : '#FEF2F2',
+              border: `1px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
               borderRadius: '8px',
               textAlign: 'center'
             }}>
               <strong style={{
-                color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626',
+                color: results.analysis.spamScore >= 7 ? '#059669' : results.analysis.spamScore >= 5 ? '#D97706' : '#DC2626',
                 fontSize: '14px'
               }}>
                 {results.analysis.assessment}
