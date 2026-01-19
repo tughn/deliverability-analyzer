@@ -108,16 +108,16 @@ export default function HomePage() {
         <div style={{
           background: 'white',
           borderRadius: '16px',
-          padding: '48px',
+          padding: '40px',
           boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
-          marginBottom: '32px'
+          marginBottom: results ? '24px' : '32px'
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '12px', color: '#111827' }}>
-              Test Your Email Deliverability
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#111827' }}>
+              {results ? 'Test Another Email' : 'Test Your Email Deliverability'}
             </h1>
-            <p style={{ fontSize: '18px', color: '#6B7280', lineHeight: '1.6' }}>
-              Send an email to the address below and get instant spam score analysis
+            <p style={{ fontSize: '16px', color: '#6B7280', lineHeight: '1.6' }}>
+              {results ? 'Send another test to check different email configurations' : 'Send an email to the address below and get instant analysis'}
             </p>
           </div>
 
@@ -182,29 +182,34 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Instructions */}
-          <div style={{
-            background: '#EFF6FF',
-            border: '1px solid #BFDBFE',
-            borderRadius: '8px',
-            padding: '20px',
-            marginBottom: '24px'
-          }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1E40AF', marginBottom: '12px' }}>
-              How it works:
-            </h3>
-            <ol style={{
-              margin: 0,
-              paddingLeft: '20px',
-              color: '#1E40AF',
-              lineHeight: '1.8'
+          {/* Instructions - Only show if no results yet */}
+          {!results && (
+            <div style={{
+              background: '#EFF6FF',
+              border: '1px solid #BFDBFE',
+              borderRadius: '8px',
+              padding: '16px',
+              marginBottom: '20px'
             }}>
-              <li>Copy the email address above</li>
-              <li>Send a test email from your email client</li>
-              <li>Wait a few seconds for analysis</li>
-              <li>View your detailed deliverability report</li>
-            </ol>
-          </div>
+              <div style={{
+                fontSize: '13px',
+                color: '#1E40AF',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+              }}>
+                <span>📧 Copy address</span>
+                <span>→</span>
+                <span>✉️ Send test email</span>
+                <span>→</span>
+                <span>⏱️ Wait 5-10 seconds</span>
+                <span>→</span>
+                <span>📊 View results</span>
+              </div>
+            </div>
+          )}
 
           {/* Status */}
           {!results && !error && (
@@ -242,184 +247,196 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Results Section */}
+        {/* Results Section - Compact and Professional */}
         {results && (
           <div style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '48px',
+            padding: '32px',
             boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
             marginBottom: '32px'
           }}>
-            <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px', color: '#111827' }}>
-              Analysis Results
-            </h2>
-
-            {/* Email Info */}
+            {/* Header with Score */}
             <div style={{
-              background: '#F9FAFB',
-              borderRadius: '8px',
-              padding: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               marginBottom: '24px',
-              border: '1px solid #E5E7EB'
+              paddingBottom: '20px',
+              borderBottom: '2px solid #F3F4F6'
             }}>
-              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>
-                <strong>From:</strong> {results.from}
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px', color: '#111827' }}>
+                  Deliverability Report
+                </h2>
+                <div style={{ fontSize: '13px', color: '#6B7280' }}>
+                  From: <strong>{results.from}</strong> • {new Date(results.timestamp).toLocaleTimeString()}
+                </div>
               </div>
-              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>
-                <strong>Subject:</strong> {results.subject}
-              </div>
-              <div style={{ fontSize: '14px', color: '#6B7280' }}>
-                <strong>Received:</strong> {new Date(results.timestamp).toLocaleString()}
+              <div style={{
+                background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FEF3C7' : '#FEF2F2',
+                border: `3px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
+                borderRadius: '12px',
+                padding: '16px 24px',
+                textAlign: 'center',
+                minWidth: '120px'
+              }}>
+                <div style={{ fontSize: '36px', fontWeight: 'bold', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626', lineHeight: '1' }}>
+                  {results.analysis.spamScore}<span style={{ fontSize: '20px' }}>/10</span>
+                </div>
+                <div style={{ fontSize: '12px', fontWeight: '600', color: '#6B7280', marginTop: '4px' }}>
+                  Spam Risk
+                </div>
               </div>
             </div>
 
-            {/* Spam Score */}
-            <div style={{
-              background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FEF3C7' : '#FEF2F2',
-              border: `2px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
-              borderRadius: '12px',
-              padding: '24px',
-              marginBottom: '24px',
-              textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626' }}>
-                {results.analysis.spamScore}/10
-              </div>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626' }}>
-                Spam Score
-              </div>
-              <div style={{ fontSize: '14px', color: '#6B7280', marginTop: '8px' }}>
-                {results.analysis.assessment}
-              </div>
-            </div>
-
-            {/* Authentication Checks */}
+            {/* Two Column Layout */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '16px',
-              marginBottom: '24px'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '24px'
             }}>
-              <div style={{
-                background: results.analysis.spfPass ? '#ECFDF5' : '#FEF2F2',
-                border: `1px solid ${results.analysis.spfPass ? '#10B981' : '#EF4444'}`,
-                borderRadius: '8px',
-                padding: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                {results.analysis.spfPass ? (
-                  <CheckCircle size={24} color="#10B981" />
-                ) : (
-                  <XCircle size={24} color="#EF4444" />
-                )}
-                <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>SPF</div>
-                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
-                    {results.analysis.details.spf}
+              {/* Left Column - Authentication */}
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
+                  Email Authentication
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{
+                    background: results.analysis.spfPass ? '#F0FDF4' : '#FEF2F2',
+                    border: `1px solid ${results.analysis.spfPass ? '#10B981' : '#EF4444'}`,
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    {results.analysis.spfPass ? (
+                      <CheckCircle size={20} color="#10B981" />
+                    ) : (
+                      <XCircle size={20} color="#EF4444" />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>SPF</div>
+                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
+                        {results.analysis.details.spf}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    background: results.analysis.dkimPass ? '#F0FDF4' : '#FEF2F2',
+                    border: `1px solid ${results.analysis.dkimPass ? '#10B981' : '#EF4444'}`,
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    {results.analysis.dkimPass ? (
+                      <CheckCircle size={20} color="#10B981" />
+                    ) : (
+                      <XCircle size={20} color="#EF4444" />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>DKIM</div>
+                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
+                        {results.analysis.details.dkim}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    background: results.analysis.dmarcPass ? '#F0FDF4' : '#FEF2F2',
+                    border: `1px solid ${results.analysis.dmarcPass ? '#10B981' : '#EF4444'}`,
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}>
+                    {results.analysis.dmarcPass ? (
+                      <CheckCircle size={20} color="#10B981" />
+                    ) : (
+                      <XCircle size={20} color="#EF4444" />
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>DMARC</div>
+                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
+                        {results.analysis.details.dmarc}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div style={{
-                background: results.analysis.dkimPass ? '#ECFDF5' : '#FEF2F2',
-                border: `1px solid ${results.analysis.dkimPass ? '#10B981' : '#EF4444'}`,
-                borderRadius: '8px',
-                padding: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                {results.analysis.dkimPass ? (
-                  <CheckCircle size={24} color="#10B981" />
-                ) : (
-                  <XCircle size={24} color="#EF4444" />
-                )}
-                <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>DKIM</div>
-                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
-                    {results.analysis.details.dkim}
+              {/* Right Column - Recommendations */}
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
+                  {results.analysis.spamScore < 3 ? 'Looking Good!' : 'How to Improve'}
+                </h3>
+                {results.analysis.recommendations.length > 0 ? (
+                  <div style={{
+                    background: '#F9FAFB',
+                    border: '1px solid #E5E7EB',
+                    borderRadius: '8px',
+                    padding: '16px'
+                  }}>
+                    <ul style={{
+                      margin: 0,
+                      paddingLeft: '20px',
+                      color: '#374151',
+                      lineHeight: '1.8',
+                      fontSize: '13px'
+                    }}>
+                      {results.analysis.recommendations.slice(0, 4).map((rec, idx) => (
+                        <li key={idx}>{rec}</li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-              </div>
-
-              <div style={{
-                background: results.analysis.dmarcPass ? '#ECFDF5' : '#FEF2F2',
-                border: `1px solid ${results.analysis.dmarcPass ? '#10B981' : '#EF4444'}`,
-                borderRadius: '8px',
-                padding: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                {results.analysis.dmarcPass ? (
-                  <CheckCircle size={24} color="#10B981" />
                 ) : (
-                  <XCircle size={24} color="#EF4444" />
-                )}
-                <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>DMARC</div>
-                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
-                    {results.analysis.details.dmarc}
+                  <div style={{
+                    background: '#ECFDF5',
+                    border: '1px solid #10B981',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    color: '#059669',
+                    fontSize: '13px',
+                    textAlign: 'center'
+                  }}>
+                    Your email authentication is properly configured!
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Spam Indicators */}
-            {results.analysis.spamIndicators.length > 0 && (
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
-                  Issues Found
-                </h3>
-                <ul style={{
-                  margin: 0,
-                  paddingLeft: '20px',
-                  color: '#EF4444',
-                  lineHeight: '1.8'
-                }}>
-                  {results.analysis.spamIndicators.map((indicator, idx) => (
-                    <li key={idx}>{indicator}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Recommendations */}
-            {results.analysis.recommendations.length > 0 && (
-              <div style={{
-                background: '#EFF6FF',
-                border: '1px solid #BFDBFE',
-                borderRadius: '8px',
-                padding: '20px'
+            {/* Bottom Assessment Bar */}
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FFFBEB' : '#FEF2F2',
+              border: `1px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
+              borderRadius: '8px',
+              textAlign: 'center'
+            }}>
+              <strong style={{
+                color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626',
+                fontSize: '14px'
               }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1E40AF' }}>
-                  Recommendations
-                </h3>
-                <ul style={{
-                  margin: 0,
-                  paddingLeft: '20px',
-                  color: '#1E40AF',
-                  lineHeight: '1.8'
-                }}>
-                  {results.analysis.recommendations.map((rec, idx) => (
-                    <li key={idx}>{rec}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                {results.analysis.assessment}
+              </strong>
+            </div>
           </div>
         )}
 
-        {/* Feature Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '20px',
-          marginBottom: '32px'
-        }}>
+        {/* Feature Grid - Hide when results shown */}
+        {!results && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '20px',
+            marginBottom: '32px'
+          }}>
           <div style={{
             background: 'white',
             padding: '24px',
@@ -498,6 +515,7 @@ export default function HomePage() {
             </p>
           </div>
         </div>
+        )}
       </main>
 
       <style jsx>{`
