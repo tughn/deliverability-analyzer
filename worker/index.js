@@ -138,7 +138,7 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
   if (!spfResult.pass) {
     analysis.spamScore += 2;
     analysis.spamIndicators.push('SPF check failed');
-    analysis.recommendations.push('Configure SPF records for your domain');
+    analysis.recommendations.push('Add an SPF record to your domain\'s DNS to authorize your sending servers');
   }
 
   // Check DKIM (header presence only - can't validate signature)
@@ -148,7 +148,7 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
   if (!dkimResult.pass) {
     analysis.spamScore += 2;
     analysis.spamIndicators.push('DKIM signature missing or not in pass state');
-    analysis.recommendations.push('Enable DKIM signing for your email');
+    analysis.recommendations.push('Set up DKIM email signing with your email service provider to verify message authenticity');
   }
 
   // Check DMARC via DNS lookup
@@ -158,7 +158,7 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
   if (!dmarcResult.pass) {
     analysis.spamScore += 1;
     analysis.spamIndicators.push('DMARC check failed');
-    analysis.recommendations.push('Set up DMARC policy for your domain');
+    analysis.recommendations.push('Create a DMARC policy record in your DNS to protect against email spoofing');
   }
 
   // Content-based spam checks
@@ -363,7 +363,7 @@ function analyzeContent(headers, emailText) {
   if (hasShortener) {
     score += 1;
     indicators.push('Contains URL shortener');
-    recommendations.push('Use full URLs instead of URL shorteners');
+    recommendations.push('Replace shortened URLs with full links - email filters often flag bit.ly and similar services as suspicious');
   }
 
   // Check for excessive links (more than 5)
@@ -396,7 +396,7 @@ function analyzeHeaders(headers) {
   if (!headers['return-path']) {
     score += 0.5;
     indicators.push('Missing Return-Path header');
-    recommendations.push('Ensure Return-Path header is set');
+    recommendations.push('Configure a Return-Path header in your email service to help handle bounced emails properly');
   }
 
   // Check for missing Message-ID

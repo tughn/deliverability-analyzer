@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Copy, Mail, RefreshCw, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Copy, Mail, RefreshCw, CheckCircle, XCircle, AlertCircle, Shield, Zap, Clock, BarChart3, ArrowRight } from 'lucide-react';
 import { generateTestId } from '@/lib/utils';
 
 interface EmailAnalysis {
@@ -50,478 +50,576 @@ export default function HomePage() {
   useEffect(() => {
     if (!testId || results) return;
 
-    setIsPolling(true);
-    const interval = setInterval(async () => {
+    const pollResults = async () => {
+      setIsPolling(true);
       try {
         const response = await fetch(`/api/results/${testId}`);
         if (response.ok) {
           const data = await response.json();
-          if (data.testId) {
+          if (data && data.analysis) {
             setResults(data);
             setIsPolling(false);
-            clearInterval(interval);
           }
         }
       } catch (err) {
-        console.error('Error polling for results:', err);
+        console.error('Error polling results:', err);
       }
-    }, 3000); // Poll every 3 seconds
-
-    // Stop polling after 5 minutes
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      setIsPolling(false);
-      if (!results) {
-        setError('No email received yet. Make sure to send an email to the address above.');
-      }
-    }, 300000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
     };
+
+    const interval = setInterval(pollResults, 3000);
+    return () => clearInterval(interval);
   }, [testId, results]);
 
   const generateNewEmail = () => {
     setIsGenerating(true);
+    const newTestId = generateTestId();
+    const newEmail = `test-${newTestId}@deliverabilityanalyzer.xyz`;
+    setTestId(newTestId);
+    setTestEmail(newEmail);
     setResults(null);
     setError(null);
-    const newTestId = generateTestId();
-    const email = `test-${newTestId}@deliverabilityanalyzer.xyz`;
-    setTestEmail(email);
-    setTestId(newTestId);
-    setTimeout(() => setIsGenerating(false), 300);
+    setCopied(false);
+    setIsGenerating(false);
   };
 
-  const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(testEmail);
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(testEmail);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F9FAFB' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #F9FAFB, #F3F4F6)' }}>
       <Header />
 
-      <main style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 20px' }}>
-        {/* Main Test Card */}
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px' }}>
+        {/* Hero Section */}
         <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '40px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
-          marginBottom: results ? '24px' : '32px'
+          textAlign: 'center',
+          marginBottom: '48px',
+          opacity: 0,
+          animation: 'fadeIn 0.6s ease-out forwards'
         }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#111827' }}>
-              {results ? 'Test Another Email' : 'Test Your Email Deliverability'}
-            </h1>
-            <p style={{ fontSize: '16px', color: '#6B7280', lineHeight: '1.6' }}>
-              {results ? 'Send another test to check different email configurations' : 'Send an email to the address below and get instant analysis'}
-            </p>
-          </div>
-
-          {/* Email Address Display */}
-          <div style={{ marginBottom: '32px' }}>
-            <label style={{
-              display: 'block',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#374151',
-              marginBottom: '8px'
-            }}>
-              Send your test email to:
-            </label>
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              alignItems: 'stretch'
-            }}>
-              <div style={{
-                flex: 1,
-                background: '#F9FAFB',
-                border: '2px solid #E5E7EB',
-                borderRadius: '8px',
-                padding: '16px 20px',
-                fontSize: '16px',
-                fontFamily: 'monospace',
-                color: '#111827',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <Mail size={20} color="#0073EA" />
-                <span>{testEmail || 'Generating...'}</span>
-              </div>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={copyToClipboard}
-                style={{ minWidth: '120px' }}
-              >
-                {copied ? (
-                  <>Check Copied!</>
-                ) : (
-                  <>
-                    <Copy size={18} />
-                    Copy
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={generateNewEmail}
-                disabled={isGenerating}
-              >
-                <RefreshCw size={18} style={{
-                  animation: isGenerating ? 'spin 1s linear infinite' : 'none'
-                }} />
-              </Button>
-            </div>
-          </div>
-
-          {/* Instructions - Only show if no results yet */}
-          {!results && (
-            <div style={{
-              background: '#EFF6FF',
-              border: '1px solid #BFDBFE',
-              borderRadius: '8px',
-              padding: '16px',
-              marginBottom: '20px'
-            }}>
-              <div style={{
-                fontSize: '13px',
-                color: '#1E40AF',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flexWrap: 'wrap',
-                justifyContent: 'center'
-              }}>
-                <span>📧 Copy address</span>
-                <span>→</span>
-                <span>✉️ Send test email</span>
-                <span>→</span>
-                <span>⏱️ Wait 5-10 seconds</span>
-                <span>→</span>
-                <span>📊 View results</span>
-              </div>
-            </div>
-          )}
-
-          {/* Status */}
-          {!results && !error && (
-            <div style={{
-              textAlign: 'center',
-              color: '#6B7280',
-              fontSize: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}>
-              {isPolling && (
-                <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
-              )}
-              <span>Waiting for email... This page will automatically update when we receive your message.</span>
-            </div>
-          )}
-
-          {error && (
-            <div style={{
-              background: '#FEF2F2',
-              border: '1px solid #FCA5A5',
-              borderRadius: '8px',
-              padding: '16px',
-              color: '#991B1B',
-              fontSize: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <AlertCircle size={18} />
-              {error}
-            </div>
-          )}
+          <h1 style={{
+            fontSize: 'clamp(28px, 5vw, 48px)',
+            fontWeight: 'bold',
+            marginBottom: '16px',
+            color: '#111827',
+            lineHeight: '1.2'
+          }}>
+            {results ? 'Deliverability Report' : 'Test Your Email Deliverability'}
+          </h1>
+          <p style={{
+            fontSize: 'clamp(16px, 3vw, 20px)',
+            color: '#6B7280',
+            maxWidth: '600px',
+            margin: '0 auto',
+            lineHeight: '1.6'
+          }}>
+            {results ? `From: ${results.from}` : 'Check your email authentication and spam score instantly'}
+          </p>
         </div>
 
-        {/* Results Section - Compact and Professional */}
-        {results && (
+        {/* Email Input Section */}
+        {!results && (
           <div style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '32px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
-            marginBottom: '32px'
+            padding: 'clamp(24px, 5vw, 40px)',
+            marginBottom: '32px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            opacity: 0,
+            animation: 'fadeIn 0.6s ease-out 0.2s forwards'
           }}>
-            {/* Header with Score */}
-            <div style={{
+            <h2 style={{
+              fontSize: 'clamp(18px, 4vw, 24px)',
+              fontWeight: '600',
+              marginBottom: '16px',
+              color: '#111827',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '24px',
-              paddingBottom: '20px',
-              borderBottom: '2px solid #F3F4F6'
+              gap: '8px',
+              flexWrap: 'wrap'
             }}>
-              <div>
-                <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '4px', color: '#111827' }}>
-                  Deliverability Report
-                </h2>
-                <div style={{ fontSize: '13px', color: '#6B7280' }}>
-                  From: <strong>{results.from}</strong> • {new Date(results.timestamp).toLocaleTimeString()}
+              <Mail size={24} style={{ flexShrink: 0 }} />
+              Send your test email to:
+            </h2>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                background: '#F9FAFB',
+                border: '2px solid #E5E7EB',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                flexWrap: 'wrap',
+                transition: 'all 0.2s ease'
+              }}>
+                <code style={{
+                  flex: '1',
+                  fontSize: 'clamp(14px, 3vw, 18px)',
+                  fontWeight: '600',
+                  color: '#2563EB',
+                  wordBreak: 'break-all',
+                  minWidth: '0'
+                }}>
+                  {testEmail || 'Generating...'}
+                </code>
+                <Button
+                  onClick={copyToClipboard}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 20px',
+                    background: copied ? '#10B981' : '#2563EB',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    flexShrink: 0
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!copied) e.currentTarget.style.background = '#1D4ED8';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!copied) e.currentTarget.style.background = '#2563EB';
+                  }}
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle size={18} />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={18} />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Steps */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '12px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              fontSize: 'clamp(13px, 2.5vw, 14px)',
+              color: '#6B7280'
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Copy size={16} style={{ flexShrink: 0 }} />
+                Copy address
+              </span>
+              <ArrowRight size={16} style={{ flexShrink: 0 }} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Mail size={16} style={{ flexShrink: 0 }} />
+                Send test email
+              </span>
+              <ArrowRight size={16} style={{ flexShrink: 0 }} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Clock size={16} style={{ flexShrink: 0 }} />
+                Wait 5-10 seconds
+              </span>
+              <ArrowRight size={16} style={{ flexShrink: 0 }} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <BarChart3 size={16} style={{ flexShrink: 0 }} />
+                View results
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Status */}
+        {!results && !error && (
+          <div style={{
+            textAlign: 'center',
+            color: '#6B7280',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            opacity: 0,
+            animation: 'fadeIn 0.6s ease-out 0.4s forwards'
+          }}>
+            {isPolling && (
+              <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
+            )}
+            <span>Waiting for email... This page will automatically update when we receive your message.</span>
+          </div>
+        )}
+
+        {/* Results Section */}
+        {results && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))',
+            gap: '24px',
+            marginBottom: '32px',
+            opacity: 0,
+            animation: 'fadeIn 0.6s ease-out forwards'
+          }}>
+            {/* Left Column - Score & Authentication */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Score Badge */}
+              <div style={{
+                background: 'white',
+                borderRadius: '16px',
+                padding: '32px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'transform 0.2s ease',
+              }}>
+                <div style={{
+                  background: results.analysis.spamScore >= 7 ? '#ECFDF5' : results.analysis.spamScore >= 5 ? '#FEF3C7' : '#FEF2F2',
+                  border: `3px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
+                  borderRadius: '16px',
+                  padding: '24px 32px',
+                  textAlign: 'center',
+                  minWidth: '140px',
+                  transition: 'all 0.3s ease'
+                }}>
+                  <div style={{
+                    fontSize: '48px',
+                    fontWeight: 'bold',
+                    color: results.analysis.spamScore >= 7 ? '#059669' : results.analysis.spamScore >= 5 ? '#D97706' : '#DC2626',
+                    lineHeight: '1',
+                    marginBottom: '8px'
+                  }}>
+                    {results.analysis.spamScore}<span style={{ fontSize: '24px' }}>/10</span>
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Deliverability
+                  </div>
                 </div>
               </div>
+
+              {/* Authentication Status */}
               <div style={{
-                background: results.analysis.spamScore >= 7 ? '#ECFDF5' : results.analysis.spamScore >= 5 ? '#FEF3C7' : '#FEF2F2',
-                border: `3px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
-                borderRadius: '12px',
-                padding: '16px 24px',
-                textAlign: 'center',
-                minWidth: '120px'
+                background: 'white',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.2s ease'
               }}>
-                <div style={{ fontSize: '36px', fontWeight: 'bold', color: results.analysis.spamScore >= 7 ? '#059669' : results.analysis.spamScore >= 5 ? '#D97706' : '#DC2626', lineHeight: '1' }}>
-                  {results.analysis.spamScore}<span style={{ fontSize: '20px' }}>/10</span>
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#6B7280', marginTop: '4px' }}>
-                  Deliverability
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Shield size={20} />
+                  Authentication
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {/* SPF */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '15px', color: '#111827', marginBottom: '4px' }}>SPF</div>
+                      <div style={{ fontSize: '13px', color: '#6B7280' }}>{results.analysis.details.spf}</div>
+                    </div>
+                    {results.analysis.spfPass ? (
+                      <CheckCircle size={24} style={{ color: '#10B981', flexShrink: 0 }} />
+                    ) : (
+                      <XCircle size={24} style={{ color: '#EF4444', flexShrink: 0 }} />
+                    )}
+                  </div>
+
+                  {/* DKIM */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '15px', color: '#111827', marginBottom: '4px' }}>DKIM</div>
+                      <div style={{ fontSize: '13px', color: '#6B7280' }}>{results.analysis.details.dkim}</div>
+                    </div>
+                    {results.analysis.dkimPass ? (
+                      <CheckCircle size={24} style={{ color: '#10B981', flexShrink: 0 }} />
+                    ) : (
+                      <XCircle size={24} style={{ color: '#EF4444', flexShrink: 0 }} />
+                    )}
+                  </div>
+
+                  {/* DMARC */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', fontSize: '15px', color: '#111827', marginBottom: '4px' }}>DMARC</div>
+                      <div style={{ fontSize: '13px', color: '#6B7280' }}>{results.analysis.details.dmarc}</div>
+                    </div>
+                    {results.analysis.dmarcPass ? (
+                      <CheckCircle size={24} style={{ color: '#10B981', flexShrink: 0 }} />
+                    ) : (
+                      <XCircle size={24} style={{ color: '#EF4444', flexShrink: 0 }} />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Two Column Layout */}
+            {/* Right Column - Recommendations */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '24px'
+              background: 'white',
+              borderRadius: '16px',
+              padding: '24px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s ease'
             }}>
-              {/* Left Column - Authentication */}
               <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
-                  Email Authentication
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div style={{
-                    background: results.analysis.spfPass ? '#F0FDF4' : '#FEF2F2',
-                    border: `1px solid ${results.analysis.spfPass ? '#10B981' : '#EF4444'}`,
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
-                    {results.analysis.spfPass ? (
-                      <CheckCircle size={20} color="#10B981" />
-                    ) : (
-                      <XCircle size={20} color="#EF4444" />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>SPF</div>
-                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
-                        {results.analysis.details.spf}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{
-                    background: results.analysis.dkimPass ? '#F0FDF4' : '#FEF2F2',
-                    border: `1px solid ${results.analysis.dkimPass ? '#10B981' : '#EF4444'}`,
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
-                    {results.analysis.dkimPass ? (
-                      <CheckCircle size={20} color="#10B981" />
-                    ) : (
-                      <XCircle size={20} color="#EF4444" />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>DKIM</div>
-                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
-                        {results.analysis.details.dkim}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{
-                    background: results.analysis.dmarcPass ? '#F0FDF4' : '#FEF2F2',
-                    border: `1px solid ${results.analysis.dmarcPass ? '#10B981' : '#EF4444'}`,
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px'
-                  }}>
-                    {results.analysis.dmarcPass ? (
-                      <CheckCircle size={20} color="#10B981" />
-                    ) : (
-                      <XCircle size={20} color="#EF4444" />
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: '600', fontSize: '13px', color: '#111827' }}>DMARC</div>
-                      <div style={{ fontSize: '11px', color: '#6B7280' }}>
-                        {results.analysis.details.dmarc}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Recommendations */}
-              <div>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <AlertCircle size={20} />
                   {results.analysis.spamScore >= 7 ? 'Looking Good!' : 'How to Improve'}
                 </h3>
                 {results.analysis.recommendations.length > 0 ? (
-                  <div style={{
-                    background: '#F9FAFB',
-                    border: '1px solid #E5E7EB',
-                    borderRadius: '8px',
-                    padding: '16px'
+                  <ul style={{
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
                   }}>
-                    <ul style={{
-                      margin: 0,
-                      paddingLeft: '20px',
-                      color: '#374151',
-                      lineHeight: '1.8',
-                      fontSize: '13px'
-                    }}>
-                      {results.analysis.recommendations.slice(0, 4).map((rec, idx) => (
-                        <li key={idx}>{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    {results.analysis.recommendations.map((rec, idx) => (
+                      <li key={idx} style={{
+                        display: 'flex',
+                        gap: '12px',
+                        fontSize: '14px',
+                        color: '#374151',
+                        lineHeight: '1.6',
+                        padding: '12px',
+                        background: '#F9FAFB',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid #2563EB',
+                        transition: 'transform 0.2s ease'
+                      }}>
+                        <span style={{ color: '#2563EB', fontWeight: 'bold', flexShrink: 0 }}>{idx + 1}.</span>
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
-                  <div style={{
-                    background: '#ECFDF5',
-                    border: '1px solid #10B981',
-                    borderRadius: '8px',
-                    padding: '16px',
-                    color: '#059669',
-                    fontSize: '13px',
-                    textAlign: 'center'
-                  }}>
-                    Your email authentication is properly configured!
-                  </div>
+                  <p style={{ fontSize: '14px', color: '#10B981', background: '#ECFDF5', padding: '16px', borderRadius: '8px', margin: 0 }}>
+                    <CheckCircle size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
+                    Your email configuration looks great! No issues detected.
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Bottom Assessment Bar */}
             <div style={{
-              marginTop: '20px',
-              padding: '16px',
+              gridColumn: '1 / -1',
+              padding: '20px',
               background: results.analysis.spamScore >= 7 ? '#ECFDF5' : results.analysis.spamScore >= 5 ? '#FFFBEB' : '#FEF2F2',
-              border: `1px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
-              borderRadius: '8px',
-              textAlign: 'center'
+              border: `2px solid ${results.analysis.spamScore >= 7 ? '#10B981' : results.analysis.spamScore >= 5 ? '#F59E0B' : '#EF4444'}`,
+              borderRadius: '12px',
+              textAlign: 'center',
+              transition: 'all 0.3s ease'
             }}>
               <strong style={{
                 color: results.analysis.spamScore >= 7 ? '#059669' : results.analysis.spamScore >= 5 ? '#D97706' : '#DC2626',
-                fontSize: '14px'
+                fontSize: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                flexWrap: 'wrap'
               }}>
+                {results.analysis.spamScore >= 7 ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
                 {results.analysis.assessment}
               </strong>
+            </div>
+
+            {/* Test Again Button */}
+            <div style={{
+              gridColumn: '1 / -1',
+              textAlign: 'center'
+            }}>
+              <Button
+                onClick={generateNewEmail}
+                style={{
+                  padding: '12px 32px',
+                  background: '#2563EB',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#1D4ED8';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#2563EB';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <RefreshCw size={18} />
+                Test Another Email
+              </Button>
             </div>
           </div>
         )}
 
-        {/* Feature Grid - Hide when results shown */}
+        {/* Features Grid - Only show when no results */}
         {!results && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px',
-            marginBottom: '32px'
-          }}>
-          <div style={{
-            background: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            border: '1px solid #E5E7EB'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+            gap: '24px',
+            marginTop: '48px',
+            opacity: 0,
+            animation: 'fadeIn 0.6s ease-out 0.6s forwards'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              background: '#0073EA',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '12px'
+              background: 'white',
+              padding: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
             }}>
-              <span style={{ fontSize: '20px' }}>🛡️</span>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '16px'
+              }}>
+                <Shield size={24} style={{ color: 'white' }} />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>
+                SPF, DKIM & DMARC
+              </h3>
+              <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.6', margin: 0 }}>
+                Verify email authentication protocols to ensure your messages are trusted by mail servers
+              </p>
             </div>
-            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
-              SpamAssassin Score
-            </h3>
-            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
-              Industry-standard spam detection
-            </p>
-          </div>
 
-          <div style={{
-            background: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            border: '1px solid #E5E7EB'
-          }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              background: '#0073EA',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '12px'
+              background: 'white',
+              padding: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
             }}>
-              <span style={{ fontSize: '20px' }}>✅</span>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(135deg, #10B981, #059669)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '16px'
+              }}>
+                <BarChart3 size={24} style={{ color: 'white' }} />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>
+                Content Analysis
+              </h3>
+              <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.6', margin: 0 }}>
+                Detect spam triggers in your email content
+              </p>
             </div>
-            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
-              SPF/DKIM/DMARC
-            </h3>
-            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
-              Email authentication checks
-            </p>
-          </div>
 
-          <div style={{
-            background: 'white',
-            padding: '24px',
-            borderRadius: '12px',
-            border: '1px solid #E5E7EB'
-          }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              background: '#0073EA',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '12px'
+              background: 'white',
+              padding: '24px',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
             }}>
-              <span style={{ fontSize: '20px' }}>⚡</span>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '16px'
+              }}>
+                <Zap size={24} style={{ color: 'white' }} />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px', color: '#111827' }}>
+                Instant Results
+              </h3>
+              <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.6', margin: 0 }}>
+                Get comprehensive deliverability insights in seconds
+              </p>
             </div>
-            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '6px', color: '#111827' }}>
-              Instant Analysis
-            </h3>
-            <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.5' }}>
-              Real-time results in seconds
-            </p>
           </div>
-        </div>
         )}
       </main>
 
       <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @media (max-width: 768px) {
+          main {
+            padding: 20px 12px !important;
+          }
         }
       `}</style>
     </div>
