@@ -4,24 +4,92 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Copy, Mail, RefreshCw } from 'lucide-react';
+import { Copy, Mail, RefreshCw, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { generateTestId } from '@/lib/utils';
+
+interface EmailAnalysis {
+  spfPass: boolean;
+  dkimPass: boolean;
+  dmarcPass: boolean;
+  spamScore: number;
+  spamIndicators: string[];
+  recommendations: string[];
+  headers: Record<string, string>;
+  details: {
+    spf: string;
+    dkim: string;
+    dmarc: string;
+  };
+  assessment: string;
+}
+
+interface TestResult {
+  testId: string;
+  from: string;
+  to: string;
+  subject: string;
+  analysis: EmailAnalysis;
+  timestamp: string;
+}
 
 export default function HomePage() {
   const [testEmail, setTestEmail] = useState('');
+  const [testId, setTestId] = useState('');
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [results, setResults] = useState<TestResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Generate test email on mount
     generateNewEmail();
   }, []);
 
+  // Poll for results
+  useEffect(() => {
+    if (!testId || results) return;
+
+    setIsPolling(true);
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/results/${testId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.testId) {
+            setResults(data);
+            setIsPolling(false);
+            clearInterval(interval);
+          }
+        }
+      } catch (err) {
+        console.error('Error polling for results:', err);
+      }
+    }, 3000); // Poll every 3 seconds
+
+    // Stop polling after 5 minutes
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      setIsPolling(false);
+      if (!results) {
+        setError('No email received yet. Make sure to send an email to the address above.');
+      }
+    }, 300000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [testId, results]);
+
   const generateNewEmail = () => {
     setIsGenerating(true);
-    const testId = generateTestId();
-    const email = `test-${testId}@deliverabilityanalyzer.xyz`;
+    setResults(null);
+    setError(null);
+    const newTestId = generateTestId();
+    const email = `test-${newTestId}@deliverabilityanalyzer.xyz`;
     setTestEmail(email);
+    setTestId(newTestId);
     setTimeout(() => setIsGenerating(false), 300);
   };
 
@@ -139,10 +207,211 @@ export default function HomePage() {
           </div>
 
           {/* Status */}
-          <div style={{ textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
-            Waiting for email... This page will automatically update when we receive your message.
-          </div>
+          {!results && !error && (
+            <div style={{
+              textAlign: 'center',
+              color: '#6B7280',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              {isPolling && (
+                <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
+              )}
+              <span>Waiting for email... This page will automatically update when we receive your message.</span>
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              background: '#FEF2F2',
+              border: '1px solid #FCA5A5',
+              borderRadius: '8px',
+              padding: '16px',
+              color: '#991B1B',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <AlertCircle size={18} />
+              {error}
+            </div>
+          )}
         </div>
+
+        {/* Results Section */}
+        {results && (
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '48px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)',
+            marginBottom: '32px'
+          }}>
+            <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '24px', color: '#111827' }}>
+              Analysis Results
+            </h2>
+
+            {/* Email Info */}
+            <div style={{
+              background: '#F9FAFB',
+              borderRadius: '8px',
+              padding: '20px',
+              marginBottom: '24px',
+              border: '1px solid #E5E7EB'
+            }}>
+              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>
+                <strong>From:</strong> {results.from}
+              </div>
+              <div style={{ fontSize: '14px', color: '#6B7280', marginBottom: '8px' }}>
+                <strong>Subject:</strong> {results.subject}
+              </div>
+              <div style={{ fontSize: '14px', color: '#6B7280' }}>
+                <strong>Received:</strong> {new Date(results.timestamp).toLocaleString()}
+              </div>
+            </div>
+
+            {/* Spam Score */}
+            <div style={{
+              background: results.analysis.spamScore < 3 ? '#ECFDF5' : results.analysis.spamScore < 6 ? '#FEF3C7' : '#FEF2F2',
+              border: `2px solid ${results.analysis.spamScore < 3 ? '#10B981' : results.analysis.spamScore < 6 ? '#F59E0B' : '#EF4444'}`,
+              borderRadius: '12px',
+              padding: '24px',
+              marginBottom: '24px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '8px', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626' }}>
+                {results.analysis.spamScore}/10
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: results.analysis.spamScore < 3 ? '#059669' : results.analysis.spamScore < 6 ? '#D97706' : '#DC2626' }}>
+                Spam Score
+              </div>
+              <div style={{ fontSize: '14px', color: '#6B7280', marginTop: '8px' }}>
+                {results.analysis.assessment}
+              </div>
+            </div>
+
+            {/* Authentication Checks */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '16px',
+              marginBottom: '24px'
+            }}>
+              <div style={{
+                background: results.analysis.spfPass ? '#ECFDF5' : '#FEF2F2',
+                border: `1px solid ${results.analysis.spfPass ? '#10B981' : '#EF4444'}`,
+                borderRadius: '8px',
+                padding: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                {results.analysis.spfPass ? (
+                  <CheckCircle size={24} color="#10B981" />
+                ) : (
+                  <XCircle size={24} color="#EF4444" />
+                )}
+                <div>
+                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>SPF</div>
+                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                    {results.analysis.details.spf}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                background: results.analysis.dkimPass ? '#ECFDF5' : '#FEF2F2',
+                border: `1px solid ${results.analysis.dkimPass ? '#10B981' : '#EF4444'}`,
+                borderRadius: '8px',
+                padding: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                {results.analysis.dkimPass ? (
+                  <CheckCircle size={24} color="#10B981" />
+                ) : (
+                  <XCircle size={24} color="#EF4444" />
+                )}
+                <div>
+                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>DKIM</div>
+                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                    {results.analysis.details.dkim}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                background: results.analysis.dmarcPass ? '#ECFDF5' : '#FEF2F2',
+                border: `1px solid ${results.analysis.dmarcPass ? '#10B981' : '#EF4444'}`,
+                borderRadius: '8px',
+                padding: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                {results.analysis.dmarcPass ? (
+                  <CheckCircle size={24} color="#10B981" />
+                ) : (
+                  <XCircle size={24} color="#EF4444" />
+                )}
+                <div>
+                  <div style={{ fontWeight: '600', fontSize: '14px', color: '#111827' }}>DMARC</div>
+                  <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                    {results.analysis.details.dmarc}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Spam Indicators */}
+            {results.analysis.spamIndicators.length > 0 && (
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
+                  Issues Found
+                </h3>
+                <ul style={{
+                  margin: 0,
+                  paddingLeft: '20px',
+                  color: '#EF4444',
+                  lineHeight: '1.8'
+                }}>
+                  {results.analysis.spamIndicators.map((indicator, idx) => (
+                    <li key={idx}>{indicator}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Recommendations */}
+            {results.analysis.recommendations.length > 0 && (
+              <div style={{
+                background: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                borderRadius: '8px',
+                padding: '20px'
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1E40AF' }}>
+                  Recommendations
+                </h3>
+                <ul style={{
+                  margin: 0,
+                  paddingLeft: '20px',
+                  color: '#1E40AF',
+                  lineHeight: '1.8'
+                }}>
+                  {results.analysis.recommendations.map((rec, idx) => (
+                    <li key={idx}>{rec}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Feature Grid */}
         <div style={{
