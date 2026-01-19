@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function generateTestId(): string {
   const timestamp = Date.now().toString(36);
   const randomStr = Math.random().toString(36).substring(2, 8);
-  return `test-${timestamp}${randomStr}`;
+  return `${timestamp}${randomStr}`;
 }
 
 export function formatScore(score: number): string {
