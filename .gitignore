@@ -38,3 +38,10 @@ coverage/
 .cache/
 *.tgz
 .npm/
+
+# Wrangler
+.wrangler/
+worker/.wrangler/
+
+# Lock files
+package-lock.json
