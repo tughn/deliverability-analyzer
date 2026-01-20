@@ -23,16 +23,32 @@ export default {
         headers[key.toLowerCase()] = value;
       }
 
+      // Debug logging: Check what headers we actually received
+      console.log('📋 All header keys:', Object.keys(headers).join(', '))
+      console.log('🔐 authentication-results:', headers['authentication-results'] || 'NOT FOUND');
+      console.log('🔐 arc-authentication-results:', headers['arc-authentication-results'] || 'NOT FOUND');
+      console.log('📧 From domain:', message.from.split('@')[1]);
+
       // Read email content
       const rawEmail = await streamToArrayBuffer(message.raw);
       const emailText = new TextDecoder().decode(rawEmail);
+
+      // Extract Cloudflare's authentication results from raw email
+      const headerSection = emailText.split('\r\n\r\n')[0];
+      const cfAuthMatch = headerSection.match(/^(?:ARC-)?Authentication-Results:\s*(?:i=\d+;\s*)?mx\.cloudflare\.net;[\s\S]*?(?=\r\n\S|\r\n\r\n)/im);
+      const cfAuthResults = cfAuthMatch ? cfAuthMatch[0] : '';
+
+      // Parse SPF/DKIM/DMARC from Cloudflare's validation
+      const spfPass = /spf=pass/i.test(cfAuthResults);
+      const dkimPass = /dkim=pass/i.test(cfAuthResults);
+      const dmarcPass = /dmarc=pass/i.test(cfAuthResults);
 
       // Extract sender domain for DNS lookups
       const fromEmail = message.from;
       const senderDomain = fromEmail.split('@')[1];
 
-      // Perform accurate analysis with DNS lookups
-      const analysis = await analyzeEmail(message, headers, emailText, senderDomain);
+      // Perform accurate analysis
+      const analysis = await analyzeEmail(message, headers, emailText, senderDomain, { spfPass, dkimPass, dmarcPass });
 
       // Store results in KV (24-hour TTL)
       const result = {
@@ -114,11 +130,11 @@ export default {
 /**
  * Analyze email with accurate DNS-based checks
  */
-async function analyzeEmail(message, headers, emailText, senderDomain) {
+async function analyzeEmail(message, headers, emailText, senderDomain, cfAuth) {
   const analysis = {
-    spfPass: false,
-    dkimPass: false,
-    dmarcPass: false,
+    spfPass: cfAuth.spfPass,
+    dkimPass: cfAuth.dkimPass,
+    dmarcPass: cfAuth.dmarcPass,
     spamScore: 0,
     spamIndicators: [],
     recommendations: [],
@@ -126,36 +142,25 @@ async function analyzeEmail(message, headers, emailText, senderDomain) {
     details: {}
   };
 
-  // Get sending IP from headers
-  const receivedHeader = headers['received'] || '';
-  const ipMatch = receivedHeader.match(/\[(\d+\.\d+\.\d+\.\d+)\]/);
-  const sendingIP = ipMatch ? ipMatch[1] : null;
+  // Set details from Cloudflare validation
+  analysis.details.spf = cfAuth.spfPass ? 'SPF passed (validated by Cloudflare)' : 'SPF failed (rejected by Cloudflare)';
+  analysis.details.dkim = cfAuth.dkimPass ? 'DKIM passed (validated by Cloudflare)' : 'DKIM failed (rejected by Cloudflare)';
+  analysis.details.dmarc = cfAuth.dmarcPass ? 'DMARC passed (validated by Cloudflare)' : 'DMARC failed (rejected by Cloudflare)';
 
-  // Check SPF via DNS lookup
-  const spfResult = await checkSPF(senderDomain, sendingIP, headers);
-  analysis.spfPass = spfResult.pass;
-  analysis.details.spf = spfResult.details;
-  if (!spfResult.pass) {
+  // Calculate spam score based on Cloudflare validation
+  if (!cfAuth.spfPass) {
     analysis.spamScore += 2;
     analysis.spamIndicators.push('SPF check failed');
     analysis.recommendations.push('Add an SPF record to your domain\'s DNS to authorize your sending servers');
   }
 
-  // Check DKIM (header presence only - can't validate signature)
-  const dkimResult = checkDKIM(headers);
-  analysis.dkimPass = dkimResult.pass;
-  analysis.details.dkim = dkimResult.details;
-  if (!dkimResult.pass) {
+  if (!cfAuth.dkimPass) {
     analysis.spamScore += 2;
     analysis.spamIndicators.push('DKIM signature missing or not in pass state');
     analysis.recommendations.push('Set up DKIM email signing with your email service provider to verify message authenticity');
   }
 
-  // Check DMARC via DNS lookup
-  const dmarcResult = await checkDMARC(senderDomain, headers);
-  analysis.dmarcPass = dmarcResult.pass;
-  analysis.details.dmarc = dmarcResult.details;
-  if (!dmarcResult.pass) {
+  if (!cfAuth.dmarcPass) {
     analysis.spamScore += 1;
     analysis.spamIndicators.push('DMARC check failed');
     analysis.recommendations.push('Create a DMARC policy record in your DNS to protect against email spoofing');
@@ -203,13 +208,16 @@ async function checkSPF(domain, sendingIP, headers) {
     const arcAuthResults = headers['arc-authentication-results'] || '';
 
     if (authResults.includes('spf=pass') || arcAuthResults.includes('spf=pass')) {
+      console.log('✅ SPF: Found spf=pass in authentication headers');
       return { pass: true, details: 'SPF passed (validated by receiving server)' };
     }
     if (authResults.includes('spf=fail') || arcAuthResults.includes('spf=fail')) {
+      console.log('❌ SPF: Found spf=fail in authentication headers');
       return { pass: false, details: 'SPF failed (rejected by receiving server)' };
     }
 
     // Fallback: Do DNS lookup for SPF record
+    console.log('⚠️ SPF: No pass/fail in auth headers, falling back to DNS lookup for domain:', domain);
     const dnsUrl = `https://cloudflare-dns.com/dns-query?name=${domain}&type=TXT`;
     const response = await fetch(dnsUrl, {
       headers: { 'Accept': 'application/dns-json' }
@@ -280,7 +288,7 @@ function checkDKIM(headers) {
 }
 
 /**
- * Check DMARC via DNS TXT record lookup
+ * Check DMARC from authentication headers
  */
 async function checkDMARC(domain, headers) {
   try {
@@ -295,33 +303,13 @@ async function checkDMARC(domain, headers) {
       return { pass: false, details: 'DMARC failed (rejected by receiving server)' };
     }
 
-    // Do DNS lookup for DMARC record
-    const dmarcDomain = `_dmarc.${domain}`;
-    const dnsUrl = `https://cloudflare-dns.com/dns-query?name=${dmarcDomain}&type=TXT`;
-    const response = await fetch(dnsUrl, {
-      headers: { 'Accept': 'application/dns-json' }
-    });
-
-    const data = await response.json();
-
-    if (data.Answer) {
-      const dmarcRecords = data.Answer.filter(record =>
-        record.data && record.data.includes('v=DMARC1')
-      );
-
-      if (dmarcRecords.length > 0) {
-        const dmarcRecord = dmarcRecords[0].data.replace(/"/g, '');
-        const policy = dmarcRecord.match(/p=([^;]+)/);
-        const policyType = policy ? policy[1] : 'unknown';
-
-        return {
-          pass: true,
-          details: `DMARC policy found (${policyType})`
-        };
-      }
-    }
-
-    return { pass: false, details: 'No DMARC policy found for domain' };
+    // If no explicit pass/fail in headers, we cannot determine DMARC status
+    // DMARC requires SPF or DKIM to pass, which we cannot validate without the auth headers
+    // Don't do DNS lookup - just finding a DMARC record doesn't mean it passed
+    return {
+      pass: false,
+      details: 'DMARC status unknown (no authentication results from receiving server)'
+    };
   } catch (error) {
     console.error('DMARC check error:', error);
     return { pass: false, details: 'Unable to verify DMARC policy' };

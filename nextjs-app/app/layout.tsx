@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Deliverability Analyzer | Email Authentication Testing",
   description: "Test your email deliverability instantly. Verify SPF, DKIM, and DMARC authentication, analyze content for spam triggers, and get actionable recommendations to improve your email reputation.",
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
