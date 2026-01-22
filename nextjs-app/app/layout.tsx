@@ -14,9 +14,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Deliverability Analyzer | Email Authentication Testing",
-  description: "Test your email deliverability instantly. Verify SPF, DKIM, and DMARC authentication, analyze content for spam triggers, and get actionable recommendations to improve your email reputation.",
+  description: "Test email deliverability instantly. Verify SPF, DKIM, DMARC authentication and get actionable recommendations.",
   icons: {
     icon: '/logo.png',
+  },
+  alternates: {
+    canonical: "https://deliverabilityanalyzer.xyz/",
+  },
+  other: {
+    "og:updated_time": new Date().toISOString(),
   },
 };
 

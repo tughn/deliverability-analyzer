@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Copy, Mail, RefreshCw, CheckCircle, XCircle, AlertCircle, Shield, Zap, Clock, BarChart3, ArrowRight } from 'lucide-react';
+import { Copy, Mail, RefreshCw, CheckCircle, XCircle, AlertCircle, Shield, Zap, Clock, BarChart3, ArrowRight, Phone, ExternalLink, ChevronDown } from 'lucide-react';
 import { generateTestId } from '@/lib/utils';
 
 interface EmailAnalysis {
@@ -40,6 +40,30 @@ export default function HomePage() {
   const [isPolling, setIsPolling] = useState(false);
   const [results, setResults] = useState<TestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      question: "How does the deliverability test work?",
+      answer: "Simply copy the unique test email address we generate for you, then send an email to it from the email account you want to test. Our system will analyze your email within seconds and provide a detailed report on your authentication status (SPF, DKIM, DMARC), content analysis, and overall deliverability score."
+    },
+    {
+      question: "What are SPF, DKIM, and DMARC?",
+      answer: "These are email authentication protocols that help verify your emails are legitimate. SPF (Sender Policy Framework) verifies which servers can send emails for your domain. DKIM (DomainKeys Identified Mail) adds a digital signature to verify the email wasn't altered. DMARC (Domain-based Message Authentication) combines both and tells receiving servers what to do with unauthenticated emails."
+    },
+    {
+      question: "Why is my deliverability score low?",
+      answer: "A low score typically means one or more authentication protocols are failing or missing. Check the recommendations section in your results for specific actions to improve your score. Common issues include missing DNS records, misconfigured email servers, or content that triggers spam filters."
+    },
+    {
+      question: "How can I improve my email deliverability?",
+      answer: "Start by ensuring your domain has proper SPF, DKIM, and DMARC records configured. Avoid spam trigger words in your content, don't use URL shorteners, maintain a clean sender reputation, and authenticate all your sending sources. Our tool will give you specific recommendations based on your test results."
+    },
+    {
+      question: "Is this tool free to use?",
+      answer: "Yes, this deliverability analyzer is completely free. You can run as many tests as you need to verify your email authentication setup and monitor your deliverability score over time."
+    }
+  ];
 
   useEffect(() => {
     // Generate test email on mount
@@ -645,6 +669,401 @@ export default function HomePage() {
           </div>
         )}
       </main>
+
+      {/* FAQ Section */}
+      <section style={{
+        background: '#F9FAFB',
+        padding: 'clamp(64px, 10vw, 100px) 16px'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '48px'
+          }}>
+            <h2 style={{
+              fontSize: 'clamp(24px, 4.5vw, 36px)',
+              fontWeight: '700',
+              color: '#111827',
+              marginBottom: '10px',
+              letterSpacing: '-0.02em'
+            }}>
+              Frequently Asked Questions
+            </h2>
+            <p style={{
+              fontSize: 'clamp(15px, 2.5vw, 17px)',
+              color: '#6B7280'
+            }}>
+              Everything you need to know about email deliverability
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="faq-item"
+                style={{
+                  background: 'white',
+                  borderRadius: '14px',
+                  border: openFaqIndex === index ? '1px solid #BFDBFE' : '1px solid #E5E7EB',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: openFaqIndex === index ? '0 4px 20px -4px rgba(37, 99, 235, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.04)'
+                }}
+              >
+                <button
+                  onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '20px 24px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (openFaqIndex !== index) {
+                      e.currentTarget.style.background = '#F8FAFC';
+                    }
+                    const circle = e.currentTarget.querySelector('.chevron-circle') as HTMLElement;
+                    if (circle && openFaqIndex !== index) {
+                      circle.style.background = '#F1F5F9';
+                      circle.style.transform = 'scale(1.05)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    const circle = e.currentTarget.querySelector('.chevron-circle') as HTMLElement;
+                    if (circle && openFaqIndex !== index) {
+                      circle.style.background = '#F3F4F6';
+                      circle.style.transform = 'scale(1)';
+                    }
+                  }}
+                >
+                  <span style={{
+                    fontWeight: '500',
+                    fontSize: 'clamp(15px, 2.8vw, 17px)',
+                    color: openFaqIndex === index ? '#1D4ED8' : '#1F2937',
+                    paddingRight: '16px',
+                    transition: 'color 0.2s ease'
+                  }}>
+                    {faq.question}
+                  </span>
+                  <div
+                    className="chevron-circle"
+                    style={{
+                      flexShrink: 0,
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: openFaqIndex === index ? '#EEF2FF' : '#F3F4F6',
+                      border: openFaqIndex === index ? '1px solid #C7D2FE' : '1px solid transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                    }}
+                  >
+                    <ChevronDown
+                      size={16}
+                      className={`faq-chevron ${openFaqIndex === index ? 'faq-chevron-open' : ''}`}
+                      style={{
+                        color: openFaqIndex === index ? '#2563EB' : '#6B7280',
+                        transition: 'color 0.2s ease'
+                      }}
+                    />
+                  </div>
+                </button>
+                <div style={{
+                  maxHeight: openFaqIndex === index ? '350px' : '0',
+                  opacity: openFaqIndex === index ? 1 : 0,
+                  overflow: 'hidden',
+                  transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}>
+                  <div style={{
+                    padding: '0 24px 22px 24px',
+                    color: '#4B5563',
+                    fontSize: 'clamp(14px, 2.5vw, 15px)',
+                    lineHeight: '1.7'
+                  }}>
+                    {faq.answer}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{
+        background: '#111827',
+        color: '#9CA3AF',
+        padding: '64px 24px 32px'
+      }}>
+        <div style={{
+          maxWidth: '1100px',
+          margin: '0 auto'
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '48px 32px',
+            marginBottom: '48px'
+          }}>
+            {/* Brand */}
+            <div style={{ maxWidth: '280px' }}>
+              <a
+                href="https://www.sendmarc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  marginBottom: '16px',
+                  transition: 'opacity 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+              >
+                <img
+                  src="https://i0.wp.com/ekoparty.org/wp-content/uploads/2024/10/Sendmarc-Logo-RGB-Main-Inverted-1.png?fit=1635%2C567&ssl=1"
+                  alt="Sendmarc"
+                  style={{ height: '32px', width: 'auto' }}
+                />
+              </a>
+              <p style={{
+                fontSize: '13px',
+                lineHeight: '1.6',
+                color: '#6B7280',
+                marginBottom: '16px'
+              }}>
+                Protect your domain with DMARC, SPF, and DKIM email authentication.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a
+                  href="mailto:info@sendmarc.com"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '13px',
+                    color: '#9CA3AF',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#9CA3AF'}
+                >
+                  <Mail size={14} />
+                  info@sendmarc.com
+                </a>
+                <a
+                  href="tel:+27109000972"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '13px',
+                    color: '#9CA3AF',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#9CA3AF'}
+                >
+                  <Phone size={14} />
+                  +27 10 900 0972
+                </a>
+              </div>
+            </div>
+
+            {/* Security Tools */}
+            <div>
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Security Tools
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  { label: 'Phishing URL Checker', href: 'https://tools.sendmarc.com/phishing-checker', external: false },
+                  { label: 'SPF Record Checker', href: 'https://sendmarc.com/spf/', external: true },
+                  { label: 'DKIM Record Checker', href: 'https://sendmarc.com/dkim/', external: true },
+                  { label: 'DMARC Analyzer', href: 'https://sendmarc.com/dmarc/', external: true }
+                ].map((link, i) => (
+                  <li key={i}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '13px',
+                        color: '#9CA3AF',
+                        textDecoration: 'none',
+                        transition: 'color 0.2s ease, transform 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.transform = 'translateX(2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#9CA3AF';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      {link.label}
+                      {link.external && <ExternalLink size={11} style={{ opacity: 0.7 }} />}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Resources
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  { label: 'Blog', href: 'https://sendmarc.com/blog/' },
+                  { label: 'Phishing Guide', href: 'https://sendmarc.com/blog/spear-phishing-vs-phishing/' },
+                  { label: 'Knowledge Base', href: 'https://help.sendmarc.com/' }
+                ].map((link, i) => (
+                  <li key={i}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '13px',
+                        color: '#9CA3AF',
+                        textDecoration: 'none',
+                        transition: 'color 0.2s ease, transform 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.transform = 'translateX(2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#9CA3AF';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      {link.label}
+                      <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Company
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  { label: 'About Sendmarc', href: 'https://www.sendmarc.com' },
+                  { label: 'Contact Us', href: 'https://www.sendmarc.com/contact' },
+                  { label: 'Privacy Policy', href: 'https://www.sendmarc.com/privacy' },
+                  { label: 'Trust Center', href: 'https://trust.sendmarc.com' }
+                ].map((link, i) => (
+                  <li key={i}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '13px',
+                        color: '#9CA3AF',
+                        textDecoration: 'none',
+                        transition: 'color 0.2s ease, transform 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.transform = 'translateX(2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '#9CA3AF';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                      }}
+                    >
+                      {link.label}
+                      <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div style={{
+            borderTop: '1px solid #1F2937',
+            paddingTop: '24px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+              © {new Date().getFullYear()} Sendmarc. All rights reserved.
+            </p>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+              Powered by{' '}
+              <a
+                href="https://www.sendmarc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: '#fff',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#60A5FA'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              >
+                Sendmarc
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
 
       <style jsx>{`
         @keyframes fadeIn {

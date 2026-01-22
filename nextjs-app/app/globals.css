@@ -77,3 +77,12 @@ body {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* FAQ chevron rotation */
+.faq-chevron {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-chevron-open {
+  transform: rotate(180deg);
+}
