@@ -800,30 +800,76 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#111827] text-[#9CA3AF] pt-16 pb-8 px-6">
-        <div className="max-w-[1100px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
-            {/* Company Info */}
-            <div className="max-w-[280px]">
-              <div className="mb-5">
-                <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
-                  <img
-                    src="https://i0.wp.com/ekoparty.org/wp-content/uploads/2024/10/Sendmarc-Logo-RGB-Main-Inverted-1.png?fit=1635%2C567&ssl=1"
-                    alt="Sendmarc"
-                    className="h-8 w-auto"
-                  />
-                </a>
-              </div>
-              <p className="text-[13px] leading-relaxed text-[#6B7280] mb-4">
-                Protect your domain and email infrastructure with DMARC, SPF, and DKIM authentication.
+      <footer style={{
+        background: '#111827',
+        color: '#9CA3AF',
+        padding: '64px 24px 32px'
+      }}>
+        <div style={{
+          maxWidth: '1100px',
+          margin: '0 auto'
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '48px 32px',
+            marginBottom: '48px'
+          }}>
+            {/* Brand */}
+            <div style={{ maxWidth: '280px' }}>
+              <a
+                href="https://www.sendmarc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link"
+                style={{
+                  display: 'inline-block',
+                  marginBottom: '16px'
+                }}
+              >
+                <img
+                  src="https://i0.wp.com/ekoparty.org/wp-content/uploads/2024/10/Sendmarc-Logo-RGB-Main-Inverted-1.png?fit=1635%2C567&ssl=1"
+                  alt="Sendmarc"
+                  style={{ height: '32px', width: 'auto' }}
+                />
+              </a>
+              <p style={{
+                fontSize: '13px',
+                lineHeight: '1.6',
+                color: '#6B7280',
+                marginBottom: '16px'
+              }}>
+                Protect your domain with DMARC, SPF, and DKIM email authentication.
               </p>
-              <div className="space-y-2.5">
-                <a href="mailto:info@sendmarc.com" className="flex items-center gap-2 text-[13px] text-[#9CA3AF] hover:text-white transition-colors duration-200">
-                  <Mail className="w-3.5 h-3.5" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a
+                  href="mailto:info@sendmarc.com"
+                  className="footer-link"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '13px',
+                    color: '#9CA3AF',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <Mail size={14} />
                   info@sendmarc.com
                 </a>
-                <a href="tel:+27109000972" className="flex items-center gap-2 text-[13px] text-[#9CA3AF] hover:text-white transition-colors duration-200">
-                  <Phone className="w-3.5 h-3.5" />
+                <a
+                  href="tel:+27109000972"
+                  className="footer-link"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '13px',
+                    color: '#9CA3AF',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <Phone size={14} />
                   +27 10 900 0972
                 </a>
               </div>
@@ -831,31 +877,40 @@ export default function HomePage() {
 
             {/* Security Tools */}
             <div>
-              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Security Tools</h4>
-              <ul className="space-y-2.5">
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Security Tools
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <li>
-                  <a href="https://sendmarc.com/dmarc/dmarc-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    DMARC Analyzer <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/dmarc/dmarc-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Analyzer <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/dmarc/record-generator/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    DMARC Generator <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/dmarc/record-generator/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Generator <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/spf/policy-tester/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    SPF Policy Tester <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/spf/policy-tester/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    SPF Policy Tester <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/dmarc/email-header-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    Email Header Analyzer <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/dmarc/email-header-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    Email Header Analyzer <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/tls-rpt/record-checker/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    TLS-RPT Checker <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/tls-rpt/record-checker/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    TLS-RPT Checker <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
               </ul>
@@ -863,31 +918,40 @@ export default function HomePage() {
 
             {/* Learn */}
             <div>
-              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Learn</h4>
-              <ul className="space-y-2.5">
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Learn
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <li>
-                  <a href="https://sendmarc.com/dmarc/what-is-dmarc/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    What is DMARC? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/dmarc/what-is-dmarc/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    What is DMARC? <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/spf/what-is-spf/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    What is SPF? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/spf/what-is-spf/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    What is SPF? <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/dkim/what-is-dkim/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    What is DKIM? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/dkim/what-is-dkim/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    What is DKIM? <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/bimi/what-is-bimi/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    What is BIMI? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/bimi/what-is-bimi/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    What is BIMI? <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/blog/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    Blog <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/blog/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    Blog <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
               </ul>
@@ -895,39 +959,68 @@ export default function HomePage() {
 
             {/* Company */}
             <div>
-              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Company</h4>
-              <ul className="space-y-2.5">
+              <h4 style={{
+                fontSize: '13px',
+                fontWeight: '600',
+                color: '#fff',
+                marginBottom: '16px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Company
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <li>
-                  <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    About Sendmarc <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    About Sendmarc <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.sendmarc.com/contact" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    Contact Us <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://www.sendmarc.com/contact" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    Contact Us <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    Privacy Policy <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://sendmarc.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    Privacy Policy <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
-                  <a href="https://trust.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
-                    Trust Center <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  <a href="https://trust.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    Trust Center <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom Bar */}
-          <div className="border-t border-[#1F2937] pt-6 flex flex-wrap justify-between items-center gap-3">
-            <p className="text-[12px] text-[#6B7280]">
+          {/* Bottom */}
+          <div style={{
+            borderTop: '1px solid #1F2937',
+            paddingTop: '24px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
               © {new Date().getFullYear()} Sendmarc. All rights reserved.
             </p>
-            <p className="text-[12px] text-[#6B7280]">
-              Powered by <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#60A5FA] transition-colors duration-200">Sendmarc</a>
+            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+              Powered by{' '}
+              <a
+                href="https://www.sendmarc.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link"
+                style={{
+                  color: '#fff',
+                  textDecoration: 'none'
+                }}
+              >
+                Sendmarc
+              </a>
             </p>
           </div>
         </div>
