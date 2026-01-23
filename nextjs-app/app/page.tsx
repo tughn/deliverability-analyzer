@@ -908,6 +908,16 @@ export default function HomePage() {
                     DMARC Compliance <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
+                <li>
+                  <a href="https://sendmarc.com/dmarc/record-generator/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Record Generator <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/dmarc/dmarc-monitor/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Monitor <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -937,6 +947,16 @@ export default function HomePage() {
                 <li>
                   <a href="https://sendmarc.com/dkim/what-is-dkim/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
                     What is DKIM? <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/dmarc/what-is-dmarc-alignment/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Alignment <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/bimi/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    BIMI Hub <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
