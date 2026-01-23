@@ -875,7 +875,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Security Tools */}
+            {/* Tools */}
             <div>
               <h4 style={{
                 fontSize: '13px',
@@ -885,17 +885,12 @@ export default function HomePage() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
-                Security Tools
+                Tools
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <li>
                   <a href="https://sendmarc.com/dmarc/dmarc-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
                     DMARC Analyzer <ExternalLink size={11} style={{ opacity: 0.7 }} />
-                  </a>
-                </li>
-                <li>
-                  <a href="https://sendmarc.com/dmarc/record-generator/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
-                    DMARC Generator <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
@@ -909,8 +904,8 @@ export default function HomePage() {
                   </a>
                 </li>
                 <li>
-                  <a href="https://sendmarc.com/tls-rpt/record-checker/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
-                    TLS-RPT Checker <ExternalLink size={11} style={{ opacity: 0.7 }} />
+                  <a href="https://sendmarc.com/dmarc/compliance/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
+                    DMARC Compliance <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
               </ul>
@@ -942,11 +937,6 @@ export default function HomePage() {
                 <li>
                   <a href="https://sendmarc.com/dkim/what-is-dkim/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
                     What is DKIM? <ExternalLink size={11} style={{ opacity: 0.7 }} />
-                  </a>
-                </li>
-                <li>
-                  <a href="https://sendmarc.com/bimi/what-is-bimi/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#9CA3AF', textDecoration: 'none' }}>
-                    What is BIMI? <ExternalLink size={11} style={{ opacity: 0.7 }} />
                   </a>
                 </li>
                 <li>
