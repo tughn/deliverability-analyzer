@@ -800,82 +800,30 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer style={{
-        background: '#111827',
-        color: '#9CA3AF',
-        padding: '64px 24px 32px'
-      }}>
-        <div style={{
-          maxWidth: '1100px',
-          margin: '0 auto'
-        }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '48px 32px',
-            marginBottom: '48px'
-          }}>
-            {/* Brand */}
-            <div style={{ maxWidth: '280px' }}>
-              <a
-                href="https://www.sendmarc.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-block',
-                  marginBottom: '16px',
-                  transition: 'opacity 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-                onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-              >
-                <img
-                  src="https://i0.wp.com/ekoparty.org/wp-content/uploads/2024/10/Sendmarc-Logo-RGB-Main-Inverted-1.png?fit=1635%2C567&ssl=1"
-                  alt="Sendmarc"
-                  style={{ height: '32px', width: 'auto' }}
-                />
-              </a>
-              <p style={{
-                fontSize: '13px',
-                lineHeight: '1.6',
-                color: '#6B7280',
-                marginBottom: '16px'
-              }}>
-                Protect your domain with DMARC, SPF, and DKIM email authentication.
+      <footer className="bg-[#111827] text-[#9CA3AF] pt-16 pb-8 px-6">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
+            {/* Company Info */}
+            <div className="max-w-[280px]">
+              <div className="mb-5">
+                <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity duration-200">
+                  <img
+                    src="https://i0.wp.com/ekoparty.org/wp-content/uploads/2024/10/Sendmarc-Logo-RGB-Main-Inverted-1.png?fit=1635%2C567&ssl=1"
+                    alt="Sendmarc"
+                    className="h-8 w-auto"
+                  />
+                </a>
+              </div>
+              <p className="text-[13px] leading-relaxed text-[#6B7280] mb-4">
+                Protect your domain and email infrastructure with DMARC, SPF, and DKIM authentication.
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <a
-                  href="mailto:info@sendmarc.com"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '13px',
-                    color: '#9CA3AF',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = '#9CA3AF'}
-                >
-                  <Mail size={14} />
+              <div className="space-y-2.5">
+                <a href="mailto:info@sendmarc.com" className="flex items-center gap-2 text-[13px] text-[#9CA3AF] hover:text-white transition-colors duration-200">
+                  <Mail className="w-3.5 h-3.5" />
                   info@sendmarc.com
                 </a>
-                <a
-                  href="tel:+27109000972"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '13px',
-                    color: '#9CA3AF',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = '#9CA3AF'}
-                >
-                  <Phone size={14} />
+                <a href="tel:+27109000972" className="flex items-center gap-2 text-[13px] text-[#9CA3AF] hover:text-white transition-colors duration-200">
+                  <Phone className="w-3.5 h-3.5" />
                   +27 10 900 0972
                 </a>
               </div>
@@ -883,183 +831,103 @@ export default function HomePage() {
 
             {/* Security Tools */}
             <div>
-              <h4 style={{
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#fff',
-                marginBottom: '16px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}>
-                Security Tools
-              </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { label: 'Phishing URL Checker', href: 'https://tools.sendmarc.com/phishing-checker', external: false },
-                  { label: 'SPF Record Checker', href: 'https://sendmarc.com/spf/', external: true },
-                  { label: 'DKIM Record Checker', href: 'https://sendmarc.com/dkim/', external: true },
-                  { label: 'DMARC Analyzer', href: 'https://sendmarc.com/dmarc/', external: true }
-                ].map((link, i) => (
-                  <li key={i}>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px',
-                        color: '#9CA3AF',
-                        textDecoration: 'none',
-                        transition: 'color 0.2s ease, transform 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.transform = 'translateX(2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = '#9CA3AF';
-                        e.currentTarget.style.transform = 'translateX(0)';
-                      }}
-                    >
-                      {link.label}
-                      {link.external && <ExternalLink size={11} style={{ opacity: 0.7 }} />}
-                    </a>
-                  </li>
-                ))}
+              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Security Tools</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <a href="https://sendmarc.com/dmarc/dmarc-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    DMARC Analyzer <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/dmarc/record-generator/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    DMARC Generator <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/spf/policy-tester/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    SPF Policy Tester <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/dmarc/email-header-analyzer/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    Email Header Analyzer <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/tls-rpt/record-checker/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    TLS-RPT Checker <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
               </ul>
             </div>
 
-            {/* Resources */}
+            {/* Learn */}
             <div>
-              <h4 style={{
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#fff',
-                marginBottom: '16px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}>
-                Resources
-              </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { label: 'Blog', href: 'https://sendmarc.com/blog/' },
-                  { label: 'Phishing Guide', href: 'https://sendmarc.com/blog/spear-phishing-vs-phishing/' },
-                  { label: 'Knowledge Base', href: 'https://help.sendmarc.com/' }
-                ].map((link, i) => (
-                  <li key={i}>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px',
-                        color: '#9CA3AF',
-                        textDecoration: 'none',
-                        transition: 'color 0.2s ease, transform 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.transform = 'translateX(2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = '#9CA3AF';
-                        e.currentTarget.style.transform = 'translateX(0)';
-                      }}
-                    >
-                      {link.label}
-                      <ExternalLink size={11} style={{ opacity: 0.7 }} />
-                    </a>
-                  </li>
-                ))}
+              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Learn</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <a href="https://sendmarc.com/dmarc/what-is-dmarc/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    What is DMARC? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/spf/what-is-spf/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    What is SPF? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/dkim/what-is-dkim/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    What is DKIM? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/bimi/what-is-bimi/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    What is BIMI? <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/blog/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    Blog <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
               </ul>
             </div>
 
             {/* Company */}
             <div>
-              <h4 style={{
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#fff',
-                marginBottom: '16px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}>
-                Company
-              </h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { label: 'About Sendmarc', href: 'https://www.sendmarc.com' },
-                  { label: 'Contact Us', href: 'https://www.sendmarc.com/contact' },
-                  { label: 'Privacy Policy', href: 'https://www.sendmarc.com/privacy' },
-                  { label: 'Trust Center', href: 'https://trust.sendmarc.com' }
-                ].map((link, i) => (
-                  <li key={i}>
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px',
-                        color: '#9CA3AF',
-                        textDecoration: 'none',
-                        transition: 'color 0.2s ease, transform 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#fff';
-                        e.currentTarget.style.transform = 'translateX(2px)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = '#9CA3AF';
-                        e.currentTarget.style.transform = 'translateX(0)';
-                      }}
-                    >
-                      {link.label}
-                      <ExternalLink size={11} style={{ opacity: 0.7 }} />
-                    </a>
-                  </li>
-                ))}
+              <h4 className="text-[13px] font-semibold text-white mb-4 uppercase tracking-wider">Company</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    About Sendmarc <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.sendmarc.com/contact" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    Contact Us <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://sendmarc.com/privacy-policy/" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    Privacy Policy <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://trust.sendmarc.com" target="_blank" rel="noopener noreferrer" className="footer-link inline-flex items-center gap-1 text-[13px] text-[#9CA3AF]">
+                    Trust Center <ExternalLink className="w-[11px] h-[11px] opacity-70" />
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom */}
-          <div style={{
-            borderTop: '1px solid #1F2937',
-            paddingTop: '24px',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
+          {/* Bottom Bar */}
+          <div className="border-t border-[#1F2937] pt-6 flex flex-wrap justify-between items-center gap-3">
+            <p className="text-[12px] text-[#6B7280]">
               © {new Date().getFullYear()} Sendmarc. All rights reserved.
             </p>
-            <p style={{ fontSize: '12px', color: '#6B7280', margin: 0 }}>
-              Powered by{' '}
-              <a
-                href="https://www.sendmarc.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  color: '#fff',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#60A5FA'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
-              >
-                Sendmarc
-              </a>
+            <p className="text-[12px] text-[#6B7280]">
+              Powered by <a href="https://www.sendmarc.com" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#60A5FA] transition-colors duration-200">Sendmarc</a>
             </p>
           </div>
         </div>
